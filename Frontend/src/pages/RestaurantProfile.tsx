@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 // Import Swiper React components
 import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
 import { Tabs, Tab } from '../components/Tabs';
@@ -13,84 +13,91 @@ import 'swiper/css/thumbs';
 // import required modules
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 import { Modal } from '../components/Modal';
+import { useParams } from 'react-router-dom';
+import { getRestaurantDetails } from '../utility/api';
 
 
 const RestaurantProfile = () => {
-  // const {restaurantId} = useParams();
+  const user = JSON.parse(localStorage.getItem('user'))
+  const { restaurantId } = useParams();
+  const [restaurantDetails, setRestaurantDetails] = useState();
+  useEffect(() => {
+    const fetchRestaurantDetails = async () => {
+      const response = await getRestaurantDetails(restaurantId);
+      setRestaurantDetails(response);
+    };
+    fetchRestaurantDetails()
+  }, [restaurantId])
+
   const swiper = useRef<SwiperClass>(null!);
   const MapStyle = {
     width: "100%",
     height: 500
   };
+  function generateArray(n) {
+    return Array.from({ length: n }, (_, i) => i + 1);
+  }
   const isFavourite = true
-  const [showModal,setShowModal]= useState(false)
+  const [showModal, setShowModal] = useState(false)
   return (
     <section className='grid grid-cols-5 mt-5 rounded-lg gap-8'>
       <div className=' col-span-3 row-span-1'>
         <Swiper
           loop={true}
-          pagination={{
-            el: ".swiper-pagination", // Use a valid DOM element here
-            type: "progressbar",
-            clickable: true,
-            bulletClass: "bg-red-300",
-            bulletActiveClass: "bg-red-300",
-          }}
+          pagination={true}
           watchSlidesProgress={true}
           spaceBetween={10}
           thumbs={
             { swiper: swiper.current }
           }
-          modules={[FreeMode, Navigation, Pagination, Thumbs]}
+          modules={[Pagination, Thumbs]}
           className="mySwiper2"
         >
-          <SwiperSlide>
-            <img className='h-[486px] w-[728px] rounded-2xl' src="https://swiperjs.com/demos/images/nature-1.jpg" />
-          </SwiperSlide>
-          <SwiperSlide>
-            <img className='h-[486px] w-[728px] rounded-2xl' src="https://swiperjs.com/demos/images/nature-1.jpg" />
-          </SwiperSlide>
-          <SwiperSlide>
-            <img className='h-[486px] w-[728px] rounded-2xl' src="https://swiperjs.com/demos/images/nature-1.jpg" />
-          </SwiperSlide>
-          <SwiperSlide>
-            <img className='h-[486px] w-[728px] rounded-2xl' src="https://swiperjs.com/demos/images/nature-1.jpg" />
-          </SwiperSlide>
-          <SwiperSlide>
-            <img className='h-[486px] w-[728px] rounded-2xl' src="https://swiperjs.com/demos/images/nature-1.jpg" />
-          </SwiperSlide>
-          <SwiperSlide>
-            <img className='h-[486px] w-[728px] rounded-2xl' src="https://swiperjs.com/demos/images/nature-1.jpg" />
-          </SwiperSlide>
-
+          {
+            restaurantDetails?.images.map((imageObj) => {
+              return (
+                <SwiperSlide>
+                  <img className='h-[486px] w-[728px] rounded-2xl' src={imageObj.image} />
+                </SwiperSlide>
+              )
+            })
+          }
         </Swiper>
       </div>
       <div className='flex flex-col col-span-2 row-span-2 gap-8 '>
         <div className=''>
-          <p className='text-3xl text-'>Chi-chi</p>
-          <div className="rating rating-lg rating-half">
-            <input type="radio" name="rating-avg" className="bg-yellow-500 mask mask-star-2 mask-half-1" checked disabled />
-            <input type="radio" name="rating-avg" className="bg-yellow-500 mask mask-star-2 mask-half-2" checked disabled />
-            <input type="radio" name="rating-avg" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-            <input type="radio" name="rating-avg" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-            <input type="radio" name="rating-avg" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-            <input type="radio" name="rating-avg" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-            <input type="radio" name="rating-avg" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-            <input type="radio" name="rating-avg" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-            <input type="radio" name="rating-avg" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-            <input type="radio" name="rating-avg" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
+          <p className='text-3xl text-'>{restaurantDetails?.name}</p>
+          <div className="rating rating-md">
+            <input type="radio" name={restaurantDetails?.id + "avgrating"} className="mask mask-heart bg-yellow-400 hidden" checked disabled />
+            {
+              generateArray(5).map((i) => {
+                if ((i) <= restaurantDetails?.average_rating) {
+                  return (
 
+                    <input type="radio" name={restaurantDetails?.id + "avgrating"} className="mask mask-heart bg-yellow-400" disabled checked readOnly />
+                  )
+                }
+                else {
+                  return (<input type="radio" name={restaurantDetails?.id + "avgrating"} className="mask mask-heart bg-yellow-400" disabled readOnly />)
+                }
+              })
+            }
+
+            <div className=''>{`(${restaurantDetails?.no_of_reviews})`}</div>
           </div>
-          <p className='mt-3'>machhindra marg , Nepal</p>
-          <p className='mt-3 w-full bg-slate-100 rounded-lg p-3 h-40'>Welcome to CHi-CHi! Nestled in a cozy corner, CHi-CHi offers a tantalizing selection of grilled chicken and pork as well as fish dishes that will delight your senses and satisfy your cravings.</p>
+          <p className='mt-3 flex flex-wrap gap-0.5 justify-start text-xs'>{
+            <>
+              <p>{restaurantDetails?.location}</p>
+              <div className="divider divider-horizontal mx-0.5"></div>
+              <p>{restaurantDetails?.price}</p>
+              <div className="divider divider-horizontal mx-0.5"></div>
+              <p>{restaurantDetails?.opening_hours}</p>
+            </>
+          }</p>
+          <p className='mt-3 w-full bg-slate-100 rounded-lg p-3 '>{restaurantDetails?.description}</p>
           <div className='mt-2 flex items-center justify-start gap-3 h-14'>
-            <button className='btn btn-primary w-80' onClick={()=>setShowModal(true)}>add review</button>
-            <div className=''>
-                <svg className="h-12 w-12 text-gray-800 dark:text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill={isFavourite?"currentColor":"none"}viewBox="0 0 24 24">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z" />
-                </svg>
-          
-            </div>
+            <button className='btn btn-primary w-80' onClick={() => setShowModal(true)}>add review</button>
+
 
           </div>
         </div>
@@ -101,7 +108,7 @@ const RestaurantProfile = () => {
 
                 <iframe
                   className='rounded-2xl'
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7273.904211293504!2d85.307945566468!3d27.67357411547265!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb192d79c4bca5%3A0xa7f535ecc88e78d8!2sCHi-CHi!5e0!3m2!1sen!2snp!4v1717407139008!5m2!1sen!2snp"
+                  src={`https://maps.google.com/maps?&q=${encodeURIComponent(restaurantDetails?.name + "," + restaurantDetails?.location)}&output=embed`}
                   width={MapStyle.width}
                   height={MapStyle.height}
                   style={{ border: 0 }}
@@ -115,38 +122,16 @@ const RestaurantProfile = () => {
             <Tab label="Menu">
               <div className="p-1 h-96 overflow-scroll rounded-xl " style={{ scrollbarGutter: "stable" }}>
                 <div className='  h-full'>
-                  <div className='flex items-center justify-between  border-[0.5px] border-neutral-300 p-1 my-2 rounded-lg'>
-                    <span className='text-2xl'>Momo</span>
-                    <span className='text-xl text-right'>150</span>
-                  </div>
-                  <div className='flex items-center justify-between  border-[0.5px] border-neutral-300 p-1 my-2 rounded-lg'>
-                    <span className='text-2xl'>Momo</span>
-                    <span className='text-xl text-right'>150</span>
-                  </div>
-                  <div className='flex items-center justify-between  border-[0.5px] border-neutral-300 p-1 my-2 rounded-lg'>
-                    <span className='text-2xl'>Momo</span>
-                    <span className='text-xl text-right'>150</span>
-                  </div>
-                  <div className='flex items-center justify-between  border-[0.5px] border-neutral-300 p-1 my-2 rounded-lg'>
-                    <span className='text-2xl'>Momo</span>
-                    <span className='text-xl text-right'>150</span>
-                  </div>
-                  <div className='flex items-center justify-between  border-[0.5px] border-neutral-300 p-1 my-2 rounded-lg'>
-                    <span className='text-2xl'>Momo</span>
-                    <span className='text-xl text-right'>150</span>
-                  </div>
-                  <div className='flex items-center justify-between  border-[0.5px] border-neutral-300 p-1 my-2 rounded-lg'>
-                    <span className='text-2xl'>Momo</span>
-                    <span className='text-xl text-right'>150</span>
-                  </div>
-                  <div className='flex items-center justify-between  border-[0.5px] border-neutral-300 p-1 my-2 rounded-lg'>
-                    <span className='text-2xl'>Momo</span>
-                    <span className='text-xl text-right'>150</span>
-                  </div>
-                  <div className='flex items-center justify-between  border-[0.5px] border-neutral-300 p-1 my-2 rounded-lg'>
-                    <span className='text-2xl'>Momo</span>
-                    <span className='text-xl text-right'>150</span>
-                  </div>
+                  {
+                    restaurantDetails?.menu_items.map((item) => {
+                      return (
+                        <div className='flex items-center justify-between  border-[0.5px] border-neutral-300 p-1 my-2 rounded-lg'>
+                          <span className='text-2xl'>{item.name}</span>
+                          <span className='text-xl text-right'>{item.price}</span>
+                        </div>
+                      )
+                    })
+                  }
                 </div>
               </div>
             </Tab>
@@ -155,106 +140,44 @@ const RestaurantProfile = () => {
       </div>
       <div className='col-span-3 row-span-3 h-full w-full p-2'>
         <p className='text-3xl'>Reviews</p>
-        <div className='tags my-2 flex flex-wrap gap-2 '>
-          <span className="badge w-20 p-2">Badge</span>
-          <span className="badge w-20 p-2">Badge</span>
-          <span className="badge w-20 p-2">Badge</span>
-          <span className="badge w-20 p-2">Badge</span>
-          <span className="badge w-20 p-2">Badge</span>
-          <span className="badge w-20 p-2">Badge</span>
+        <div className='tags my-2 flex flex-wrap gap-2 justify-center'>
+          {
+            restaurantDetails?.tags.map((tag) => {
+              return <span className="badge min-w-20 p-2">{tag?.name}</span>
+            })
+          }
         </div>
         <div className='reviews overflow-auto flex flex-col gap-3 h-80 mt-5 rounded-lg'>
-          <div className="user-rating bg-default-50 flex flex-col gap-3 rounded-md border-[0.5px] border-neutral-300 p-3 text-base justify-start">
-            <div className="user-details flex gap-3 items-center">
-              <img className=" rounded-full w-6 h-6" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-              <p className='text-xl'>Vision Rijal</p>
-              <div className="rating rating-sm rating-half">
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled checked />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled checked />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled checked />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-
-              </div>
-            </div>
-            <div className='review-text '>
-              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam eos doloribus quisquam fuga aut! Ullam tempora, temporibus modi fuga minus sint eligendi, tenetur molestias esse totam pariatur facere obcaecati consectetur.</p>
-            </div>
-          </div>
-          <div className="user-rating bg-default-50 flex flex-col gap-3 rounded-md border-[0.5px] border-neutral-300 p-3 text-base justify-start">
-            <div className="user-details flex gap-3 items-center">
-              <img className=" rounded-full w-6 h-6" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-              <p className='text-xl'>Vision Rijal</p>
-              <div className="rating rating-sm rating-half">
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled checked />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled checked />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled checked />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-                <input type="radio" name="rating-1" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-
-              </div>
-            </div>
-            <div className='review-text '>
-              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam eos doloribus quisquam fuga aut! Ullam tempora, temporibus modi fuga minus sint eligendi, tenetur molestias esse totam pariatur facere obcaecati consectetur.</p>
-            </div>
-          </div>
-          <div className="user-rating bg-default-50 flex flex-col gap-3 rounded-md border-[0.5px] border-neutral-300 p-3 text-base justify-start">
-            <div className="user-details flex gap-3 items-center">
-              <img className=" rounded-full w-6 h-6" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-              <p className='text-xl'>Vision Rijal</p>
-              <div className="rating rating-sm rating-half">
-                <input type="radio" name="rating-2" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled checked />
-                <input type="radio" name="rating-2" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled checked />
-                <input type="radio" name="rating-2" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled checked />
-                <input type="radio" name="rating-2" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-                <input type="radio" name="rating-2" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-                <input type="radio" name="rating-2" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-                <input type="radio" name="rating-2" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-                <input type="radio" name="rating-2" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-                <input type="radio" name="rating-2" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-                <input type="radio" name="rating-2" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-
-              </div>
-            </div>
-            <div className='review-text '>
-              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam eos doloribus quisquam fuga aut! Ullam tempora, temporibus modi fuga minus sint eligendi, tenetur molestias esse totam pariatur facere obcaecati consectetur.</p>
-            </div>
-          </div>
-          <div className="user-rating bg-default-50 flex flex-col gap-3 rounded-md border-[0.5px] border-neutral-300 p-3 text-base justify-start">
-            <div className="user-details flex gap-3 items-center">
-              <img className=" rounded-full w-6 h-6" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-              <p className='text-xl'>Vision Rijal</p>
-              <div className="rating rating-sm rating-half">
-                <input type="radio" name="rating-3" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled checked />
-                <input type="radio" name="rating-3" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled checked />
-                <input type="radio" name="rating-3" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled checked />
-                <input type="radio" name="rating-3" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled checked />
-                <input type="radio" name="rating-3" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-                <input type="radio" name="rating-3" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-                <input type="radio" name="rating-3" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-                <input type="radio" name="rating-3" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-                <input type="radio" name="rating-3" className="bg-yellow-500 mask mask-star-2 mask-half-1" disabled />
-                <input type="radio" name="rating-3" className="bg-yellow-500 mask mask-star-2 mask-half-2" disabled />
-
-              </div>
-            </div>
-            <div className='review-text '>
-              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam eos doloribus quisquam fuga aut! Ullam tempora, temporibus modi fuga minus sint eligendi, tenetur molestias esse totam pariatur facere obcaecati consectetur.</p>
-            </div>
-          </div>
+          {
+            !restaurantDetails?.no_of_reviews && <p className='text-4xl mt-5 rounded-xl text-neutral-200 border-[0.5px] border-neutral-200 h-32 flex items-center w-full justify-center'>"NO REVIEWS YET"</p>
+          }
+          {
+            restaurantDetails?.reviews.map((review) => {
+              return (
+                <div className="user-rating bg-default-50 flex flex-col gap-3 rounded-md border-[0.5px] border-neutral-300 p-3 text-base justify-start">
+                  <div className="user-details flex gap-3 items-center">
+                    <img className=" rounded-full w-6 h-6" src={review.user.profile_picture ?? "https://api.multiavatar.com/" + review.user.username +".png" } />
+                    <p className='text-xl'>{review.user.username.split('_')[0]}</p>
+                    <div className="rating rating-sm">
+                      {
+                        [1, 2, 3, 4, 5].map((i) => {
+                          return (
+                            <input type="radio" name={review.id + "userreview"} className="mask mask-heart bg-yellow-400" checked={i == review.rating} disabled />
+                          )
+                        })
+                      }
+                    </div>
+                  </div>
+                  <div className='review-text '>
+                    <p>{review?.review_text}</p>
+                  </div>
+                </div>
+              )
+            })
+          }
         </div>
       </div>
-          <Modal title="add review" text="add a review" visible={showModal} onClose={()=>{setShowModal(false)}}/>
+      <Modal userId={user.id} title="add review" id={restaurantDetails?.id} text="add a review" visible={showModal} onClose={() => setShowModal(false)} restaurantId={restaurantId} />
     </section>
   )
 }
