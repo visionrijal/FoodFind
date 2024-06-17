@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+.card img {
+  transition: transform 0.3s ease; 
+}
+
+.card:hover img{
+  transform: scale(1.1); 
+  cursor: pointer;
+}
