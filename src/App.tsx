@@ -6,7 +6,7 @@ import RestaurantProfile from "./pages/RestaurantProfile"
 
 function App() {
   return (
-    <div className="px-72 py-5">
+    <div className="px-16 py-5">
       <Router>
         <Navbar />
         <Routes>
