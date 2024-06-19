@@ -89,8 +89,9 @@ const MainApp = () => {
           })
         }
       </Swiper>
+
       <section className='mt-14 w-full'>
-        <p className='text-5xl text '>Restaurants</p>
+        <p className='text-5xl text font-extrabold'>Restaurants</p>
         <div className="collapse collapse-arrow bg-primay mt-4">
           <input type="checkbox" className="peer" />
           <div className="collapse-title bg-primary text-primary-content peer-checked:bg-neutral-50 peer-checked:text-secondary-content">
@@ -100,39 +101,33 @@ const MainApp = () => {
             <div className='flex flex-wrap pb-5 items-center justify-evenly'>
               {
                 tags?.map((tag) => (
-                    <input
-                      type='checkbox'
-                      className="mr-2 btn btn-sm w-24 border-[0.5px] border-neutral-100 mt-5 mx-2 rounded-lg text-xs "
-                      onChange={() => handleFilter(tag.name)}
-                      checked={selectedTags.includes(tag.name)}
-                      aria-label={tag.name}
-                    />  
+                  <input
+                    type='checkbox'
+                    className="mr-2 btn btn-sm w-24 border-[0.5px] border-neutral-100 mt-5 mx-2 rounded-lg text-xs "
+                    onChange={() => handleFilter(tag.name)}
+                    checked={selectedTags.includes(tag.name)}
+                    aria-label={tag.name}
+                  />
                 ))
               }
             </div>
           </div>
         </div>
-
       </section>
-      <section className='grid grid-cols-3 mt-8 gap-8'>
-        {
-          restaurantList.map((restaurant) => {
-            return (
-              <Link to={`/restaurant/${restaurant.id}`}>
-                <div className="card w-full  bg-base-100 shadow-xl">
-                  <figure className=''><img className="w-full h-80 " src={`${restaurant.images[0].image}`} alt="Shoes" /></figure>
-                  <div className="card-body">
-                    <h2 className="card-title">{restaurant.name}</h2>
-                    <p className='line-clamp-4 text-xs'>{restaurant.location}</p>
-                    <p className='line-clamp-4'>{restaurant.description}</p>
-                    <div className="card-actions justify-end">
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            )
-          })
-        }
+
+      <section className='grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8'>
+        {restaurantList.map((restaurant) => (
+          <Link key={restaurant.id} to={`/restaurant/${restaurant.id}`}>
+            <div className="card bg-base-100 shadow-xl">
+              <figure><img className="w-full h-80 object-cover" src={`${restaurant.images[0].image}`} alt="Restaurant" /></figure>
+              <div className="card-body p-4">
+                <h2 className="card-title text-lg font-bold">{restaurant.name}</h2>
+                <p className='line-clamp-4 text-sm'>{restaurant.location}</p>
+                <p className='line-clamp-4 text-sm'>{restaurant.description}</p>
+              </div>
+            </div>
+          </Link>
+        ))}
       </section>
     </>
   )

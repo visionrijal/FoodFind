@@ -16,7 +16,6 @@ const Navbar = () => {
         localStorage.getItem("theme") ? localStorage.getItem("theme") : "bumblebee"
     );
 
-    // update state on toggle
     const handleToggle = (e) => {
         if (e.target.checked) {
             setTheme("dark");
@@ -25,11 +24,9 @@ const Navbar = () => {
         }
     };
 
-    // set theme state in localstorage on mount & also update localstorage on state change
     useEffect(() => {
         localStorage.setItem("theme", theme);
         const localTheme = localStorage.getItem("theme");
-        // add custom data-theme attribute to html tag required to update theme using DaisyUI
         document.querySelector("html").setAttribute("data-theme", localTheme);
     }, [theme]);
 
@@ -37,7 +34,6 @@ const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false); // State for menu toggle
     const [user, setUser] = useState(null);
     useEffect(() => {
-        // Check if user details are already stored in localStorage
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             setUser(JSON.parse(storedUser));
@@ -47,8 +43,8 @@ const Navbar = () => {
     const handleLogin = () => {
         login()
     };
+
     const handleLogout = () => {
-        // Clear user details from localStorage and state
         localStorage.removeItem('user');
         setUser(null);
         navigate("/");
@@ -77,48 +73,59 @@ const Navbar = () => {
 
 
     return (
-        <nav className="flex justify-between items-center px-0 py-2">
-            <Link to="/"> <p className="font-extrabold text-2xl"> FoodFind </p></Link>
+        <nav className="flex justify-between items-center px-4 py-2">
+            <Link to="/"> <p className="font-extrabold text-2xl mr-20"> FoodFind </p></Link>
 
-            {/* Hamburger Mwnu */}
-            {user !== null && (
-            <button className="block ml-auto lg:hidden btn btn-square btn-ghost" onClick={toggleMenu}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-            )}
+            {user === null ?
+                (
+                    <button onClick={() => handleLogin()} className="btn btn-primary">Login</button>
+                ) :
+                <>
+                    <div className="hidden lg:flex items-center lg:space-x-4">
+                        <Link to="/restaurant" className="text-2xl font-bold relative group mr-5">
+                            <span className="hover:underline">Restaurants</span>
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-yellow-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                        </Link>
+                        <Link to="/food" className="text-2xl font-bold relative group">
+                            <span className="hover:underline">Food</span>
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-yellow-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                        </Link>
+                    </div>
 
-            <div className={`lg:flex ml-auto lg:items-center gap-3`}>
-                {user === null ?
-                    (
-                        <button onClick={() => handleLogin()} className="btn btn-primary">Login</button>
-                    ) :
-                    <>
+                    {/* Middle gap */}
+                    <div className="flex-grow"></div>
 
-                        {/* Search bar and Profile */}
-                        <div className={`navbar lg:flex ml-auto lg:items-center gap-3 bg-base-100 ${isMenuOpen ? 'block' : 'hidden'}`}>
-                            <div className="flex-none gap-2">
-                                <div className="form-control">
-                                    <input
-                                        type="text"
-                                        placeholder="Search"
-                                        className="input input-bordered w-24 md:w-auto"
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                handleSearch(e.target.value);
-                                            }
-                                        }}
-                                    />
-                                </div>
+                    {/* Default Navbar*/}
+                    <div className="hidden lg:flex justify-between items-center lg:space-x-4">
+                        {/* Search bar */}
+                        <div className="form-control mr-10">
+                            <input
+                                type="text"
+                                placeholder="Search"
+                                className="input input-bordered-yello border-yellow-500 w-full px-2"
 
-                                <Link to="/restaurant"> <p className="text-md font-semibold"> Restaurants </p></Link>
-                                <Link to="/food"> <p className="text-md font-semibold"> Food </p></Link>
-                            </div>
+                            />
                         </div>
+                    </div>
 
-                        {/* User Profile Dropdown */}
-                        <div className="dropdown dropdown-end">
+                    {/* Theme Toggle */}
+                    <div className="flex-none mr-3">
+                        <button className="btn btn-square btn-ghost">
+                            <label className="swap swap-rotate w-12 h-12">
+                                <input
+                                    type="checkbox"
+                                    onChange={handleToggle}
+                                    checked={theme === "bumblebee" ? false : true}
+                                />
+                                <img src={sun} alt="bumblebee" className="w-8 h-8 swap-on" />
+                                <img src={moon} alt="dark" className="w-8 h-8 swap-off" />
+                            </label>
+                        </button>
+                    </div>
+
+                    {/* User Profile Dropdown */}
+                    <div className="flex-none mr-3">
+                        <div className="dropdown ml-auto dropdown-end">
                             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                                 <div className="w-10 rounded-full">
                                     <img className="" src={user?.profile_picture} />
@@ -150,25 +157,59 @@ const Navbar = () => {
                             </div>
                         </button> 
                         <button onClick={() => handleLogout()} className="btn btn-secondary btn-outline">logout</button>*/}
-                    </>
-                }
-            </div>
+                    </div>
+                </>
+            }
 
 
-
-            <div className="flex-none">
-                <button className="btn btn-square btn-ghost">
-                    <label className="swap swap-rotate w-12 h-12">
-                        <input
-                            type="checkbox"
-                            onChange={handleToggle}
-                            checked={theme === "bumblebee" ? false : true}
-                        />
-                        <img src={sun} alt="bumblebee" className="w-8 h-8 swap-on" />
-                        <img src={moon} alt="dark" className="w-8 h-8 swap-off" />
-                    </label>
+            {/* Hamburger Menu*/}
+            {user !== null && (
+                <button className="block lg:hidden btn btn-square btn-ghost ml-auto px-2 py-2" onClick={toggleMenu}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
                 </button>
-            </div>
+            )}
+
+            {/* Responsive Sidebar*/}
+            {user !== null && (
+                <div className={`lg:hidden fixed top-0 right-0 h-full z-50 transition-transform duration-300 transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`} style={{ width: '230px' }}>
+                    {/* Close button */}
+                    <button className="absolute top-1 right-0 mt-2 mr-4 btn btn-square btn-ghost" onClick={toggleMenu}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                    {/* Menu Items */}
+                    <div className="mx-1 my-5">
+                        <Link to="/"> <p className="font-extrabold text-2xl">FoodFind</p> </Link>
+                        <div className="mb-6 mx-1 my-20">
+                            <Link to="/restaurant" className="flex items-center px-2 border-b border-yellow-500 hover:text-yellow-500">
+                                <p className="text-md font-extrabold">Restaurants</p>
+                            </Link>
+                            <Link to="/food" className="flex items-center mt-4 px-2 border-b border-yellow-500 hover:text-yellow-500">
+                                <p className="text-md font-extrabold">Food</p>
+                            </Link>
+                        </div>
+
+                        {/* Search bar (duplicate for responsiveness) */}
+                        <div className="form-control">
+                            <input
+                                type="text"
+                                placeholder="Search"
+                                className="input input-bordered border-yellow-500 w-full px-2"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSearch(e.currentTarget.value);
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </nav>
     )
 }
