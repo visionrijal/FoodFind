@@ -30,18 +30,15 @@ const RestaurantProfile = () => {
   }, [restaurantId])
 
   const swiper = useRef<SwiperClass>(null!);
-  const MapStyle = {
-    width: "100%",
-    height: 500
-  };
+
   function generateArray(n) {
     return Array.from({ length: n }, (_, i) => i + 1);
   }
   const isFavourite = true
   const [showModal, setShowModal] = useState(false)
   return (
-    <section className='grid grid-cols-5 mt-5 rounded-lg gap-8'>
-      <div className=' col-span-3 row-span-1'>
+    <section className='md:grid md:grid-cols-5 mt-5 rounded-lg gap-4 md:gap-8'>
+      <div className=' md:col-span-3 row-span-1'>
         <Swiper
           loop={true}
           pagination={true}
@@ -57,7 +54,7 @@ const RestaurantProfile = () => {
             restaurantDetails?.images.map((imageObj) => {
               return (
                 <SwiperSlide>
-                  <img className='h-[486px] w-[728px] rounded-2xl' src={imageObj.image} />
+                  <img className='h-[300px] w-[500px] md:h-[550px] md:w-full rounded-2xl' src={imageObj.image} />
                 </SwiperSlide>
               )
             })
@@ -101,16 +98,15 @@ const RestaurantProfile = () => {
 
           </div>
         </div>
-        <div>
+        <div className='h-96'>
           <Tabs>
             <Tab label="Map">
               <div className="App">
-
                 <iframe
                   className='rounded-2xl'
                   src={`https://maps.google.com/maps?&q=${encodeURIComponent(restaurantDetails?.name + "," + restaurantDetails?.location)}&output=embed`}
-                  width={MapStyle.width}
-                  height={MapStyle.height}
+                  width={"100%"}
+                  height={"500px"}
                   style={{ border: 0 }}
                   allowFullScreen={false}
                   aria-hidden="true"
@@ -138,7 +134,7 @@ const RestaurantProfile = () => {
           </Tabs>
         </div>
       </div>
-      <div className='col-span-3 row-span-3 h-full w-full p-2'>
+      <div className='mt-48 md:col-span-3 md:row-span-3 h-full w-full p-2'>
         <p className='text-3xl'>Reviews</p>
         <div className='tags my-2 flex flex-wrap gap-2 justify-center'>
           {
@@ -147,7 +143,7 @@ const RestaurantProfile = () => {
             })
           }
         </div>
-        <div className='reviews overflow-auto flex flex-col gap-3 h-80 mt-5 rounded-lg'>
+        <div className='reviews overflow-auto flex flex-col gap-3 h-96 md:h-80 mt-5 rounded-lg'>
           {
             !restaurantDetails?.no_of_reviews && <p className='text-4xl mt-5 rounded-xl text-neutral-200 border-[0.5px] border-neutral-200 h-32 flex items-center w-full justify-center'>"NO REVIEWS YET"</p>
           }
@@ -156,7 +152,7 @@ const RestaurantProfile = () => {
               return (
                 <div className="user-rating bg-default-50 flex flex-col gap-3 rounded-md border-[0.5px] border-neutral-300 p-3 text-base justify-start">
                   <div className="user-details flex gap-3 items-center">
-                    <img className=" rounded-full w-6 h-6" src={review.user.profile_picture ?? "https://api.multiavatar.com/" + review.user.username +".png" } />
+                    <img className=" rounded-full w-6 h-6" src={review.user.profile_picture ?? "https://api.multiavatar.com/" + review.user.username + ".png"} />
                     <p className='text-xl'>{review.user.username.split('_')[0]}</p>
                     <div className="rating rating-sm">
                       {

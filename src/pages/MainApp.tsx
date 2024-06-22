@@ -60,31 +60,33 @@ const MainApp = () => {
           topPicks.map((pick) => {
             return (
               <SwiperSlide>
-                <div className="bg-primary flex justify-evenly h-96 items-center text-bold rounded-2xl">
-                  <div className="w-1/2">
-                    <p className='text-2xl uppercase bg-yellow-100 w-max rounded-lg p-1 my-3'>Our Top Picks</p>
-                    <h1 className="text-4xl uppercase">{pick.restaurant.name}</h1>
-                    <p>{pick.restaurant.location}</p>
-
-                    <p className="line-clamp-3 mt-5">
-                      {pick.restaurant.description}
-                    </p>
-                    <Link to={`/restaurant/${pick.restaurant.id}`}>
-                      <button className=" mt-8 bg-slate-50 text-yellow-600  hover:bg-slate-100 py-2 px-10 rounded-lg ">
-                        View Restaurant
-                      </button>
-                    </Link>
-
-                  </div>
-                  <div>
+              <div className="bg-primary flex flex-col md:flex-row justify-evenly h-auto md:h-96 items-center text-bold rounded-2xl p-4 md:p-8">
+                <div className="w-full md:w-1/2 text-center md:text-left">
+                  <p className="text-2xl uppercase bg-yellow-100 w-max mx-auto md:mx-0 rounded-lg p-1 my-3">
+                    Our Top Picks
+                  </p>
+                  <h1 className="text-4xl uppercase">{pick.restaurant.name}</h1>
+                  <p>{pick.restaurant.location}</p>
+                  <p className="line-clamp-3 mt-5">
+                    {pick.restaurant.description}
+                  </p>
+                  <Link to={`/restaurant/${pick.restaurant.id}`}>
+                    <button className="mt-8 bg-slate-50 text-yellow-600 hover:bg-slate-100 py-2 px-10 rounded-lg">
+                      View Restaurant
+                    </button>
+                  </Link>
+                </div>
+                <div className="w-full md:w-auto mt-6 md:mt-0 flex justify-center">
+                  <div className="w-96 h-80">
                     <img
-                      className="rounded-lg w-96 h-80"
+                      className="rounded-lg w-full h-full object-cover"
                       src={pick.restaurant.images[0].image}
                       alt=""
                     />
                   </div>
                 </div>
-              </SwiperSlide>
+              </div>
+            </SwiperSlide>
             )
           })
         }

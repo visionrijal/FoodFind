@@ -18,7 +18,7 @@ const Navbar = () => {
 
     const handleToggle = (e) => {
         if (e.target.checked) {
-            setTheme("dark");
+            setTheme("dracula");
         } else {
             setTheme("bumblebee");
         }
@@ -118,7 +118,7 @@ const Navbar = () => {
                                     checked={theme === "bumblebee" ? false : true}
                                 />
                                 <img src={sun} alt="bumblebee" className="w-8 h-8 swap-on" />
-                                <img src={moon} alt="dark" className="w-8 h-8 swap-off" />
+                                <img src={moon} alt="dracula" className="w-8 h-8 swap-off" />
                             </label>
                         </button>
                     </div>
@@ -173,7 +173,7 @@ const Navbar = () => {
 
             {/* Responsive Sidebar*/}
             {user !== null && (
-                <div className={`lg:hidden fixed top-0 right-0 h-full z-50 transition-transform duration-300 transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`} style={{ width: '230px' }}>
+                <div className={`lg:hidden fixed border-l-4 border-yellow-500 top-0 right-0 h-full z-50 transition-transform duration-300 transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} ${theme === 'dracula' ? 'bg-gray-800' : 'bg-white'}`} style={{ width: '230px' }}>
                     {/* Close button */}
                     <button className="absolute top-1 right-0 mt-2 mr-4 btn btn-square btn-ghost" onClick={toggleMenu}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
