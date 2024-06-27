@@ -37,34 +37,34 @@ const RestaurantProfile = () => {
   const isFavourite = true
   const [showModal, setShowModal] = useState(false)
   return (
-    <section className='md:grid md:grid-cols-5 mt-5 rounded-lg gap-4 md:gap-8'>
-      <div className=' md:col-span-3 row-span-1'>
-        <Swiper
-          loop={true}
-          pagination={true}
-          watchSlidesProgress={true}
-          spaceBetween={10}
-          thumbs={
-            { swiper: swiper.current }
-          }
-          modules={[Pagination, Thumbs]}
-          className="mySwiper2"
-        >
-          {
-            restaurantDetails?.images.map((imageObj) => {
-              return (
-                <SwiperSlide>
-                  <img className='h-[300px] w-[500px] md:h-[550px] md:w-full rounded-2xl' src={imageObj.image} />
-                </SwiperSlide>
-              )
-            })
-          }
-        </Swiper>
+    <section className='md:grid md:grid-cols-5 mt-14 rounded-lg gap-4 md:gap-8'>
+      <div className='md:col-span-3 row-span-1 flex justify-center mb-10'>
+        <div className='max-w-[600px] md:max-w-[100%]'>
+          <Swiper
+            loop={true}
+            pagination={true}
+            watchSlidesProgress={true}
+            spaceBetween={10}
+            thumbs={{ swiper: swiper.current }}
+            modules={[Pagination, Thumbs]}
+            className='mySwiper2'
+          >
+            {restaurantDetails?.images.map((imageObj, index) => (
+              <SwiperSlide key={index}>
+                <img
+                  className='h-[300px] w-[100%] md:h-[550px] rounded-2xl object-cover'
+                  src={imageObj.image}
+                  alt={`Slide ${index}`}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
       </div>
-      <div className='flex flex-col col-span-2 row-span-2 gap-8 '>
+      <div className='flex flex-col col-span-2 m-2 row-span-2 gap-8 '>
         <div className=''>
           <p className='text-3xl text-'>{restaurantDetails?.name}</p>
-          <div className="rating rating-md">
+          <div className="rating rating-md mt-2 gap-0.5">
             <input type="radio" name={restaurantDetails?.id + "avgrating"} className="mask mask-heart bg-yellow-400 hidden" checked disabled />
             {
               generateArray(5).map((i) => {
@@ -93,9 +93,7 @@ const RestaurantProfile = () => {
           }</p>
           <p className='mt-3 w-full bg-slate-100 rounded-lg p-3 '>{restaurantDetails?.description}</p>
           <div className='mt-2 flex items-center justify-start gap-3 h-14'>
-            <button className='btn btn-primary w-80' onClick={() => setShowModal(true)}>add review</button>
-
-
+            <button className='btn btn-primary w-80 mt-8' onClick={() => setShowModal(true)}>Add Review</button>
           </div>
         </div>
         <div className='h-96'>
@@ -134,7 +132,7 @@ const RestaurantProfile = () => {
           </Tabs>
         </div>
       </div>
-      <div className='mt-48 md:col-span-3 md:row-span-3 h-full w-full p-2'>
+      <div className='mt-48 md:mt-0 md:col-span-3 md:row-span-3 h-full w-full p-2'>
         <p className='text-3xl'>Reviews</p>
         <div className='tags my-2 flex flex-wrap gap-2 justify-center'>
           {
