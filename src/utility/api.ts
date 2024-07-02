@@ -38,3 +38,10 @@ export const addReview = async (obj) => {
     )
     return response.data;
 }
+export const getUserReviews = async (userId: number) => {
+    // console.log(`Fetching user reviews for ${userId}`);
+    const response = await axios.get(`http://127.0.0.1:8000/api/user-reviews/${userId}`);
+    // console.log(response.data);
+    return response.data; // Assuming this returns an array of reviews
+};
+

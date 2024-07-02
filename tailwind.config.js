@@ -7,7 +7,8 @@ export default {
   theme: {
     extend: {
       colors:{
-        'baby-pink':'#B881B1'
+        'baby-pink':'#B881B1',
+        'bumblebee': '#FCE205'
       }
     },
   },

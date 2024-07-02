@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import MainApp from "./pages/MainApp"
 import RestaurantProfile from "./pages/RestaurantProfile"
+import UserProfile from "./pages/Profile"
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route index element={<Home />} />
           <Route  path="/restaurant" element={<MainApp/>} />
+          <Route path="/profile" element={<UserProfile />} />
           <Route  path="/restaurant/:restaurantId" element={<RestaurantProfile/>}/>
         </Routes>
       </Router>

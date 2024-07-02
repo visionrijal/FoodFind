@@ -57,13 +57,17 @@ const Navbar = () => {
                 const res = await axios.post("http://localhost:8000/api/google-login/", {
                     token: tokenResponse.access_token
                 });
-                // Store user details in localStorage
-                localStorage.setItem('user', JSON.stringify(res.data));
-                setUser(res.data);
-                navigate("/restaurant")
-            } catch (error) {
-                console.log(error);
-            }
+            // Store user details including joined date/time in localStorage
+            const userData = {
+                ...res.data,
+                joined: new Date().toISOString() // Capture current time
+            };
+            localStorage.setItem('user', JSON.stringify(userData));
+            setUser(userData);
+            navigate("/profile"); // Redirect to profile page
+        } catch (error) {
+            console.log(error);
+        }
         }
     });
 
@@ -84,11 +88,11 @@ const Navbar = () => {
                     <div className="hidden lg:flex items-center lg:space-x-4">
                         <Link to="/restaurant" className="text-2xl font-bold relative group mr-5">
                             <span className="hover:underline">Restaurants</span>
-                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-yellow-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-bumblebee transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
                         </Link>
                         <Link to="/food" className="text-2xl font-bold relative group">
                             <span className="hover:underline">Food</span>
-                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-yellow-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-bumblebee transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
                         </Link>
                     </div>
 
@@ -102,7 +106,7 @@ const Navbar = () => {
                             <input
                                 type="text"
                                 placeholder="Search"
-                                className="input input-bordered-yello border-yellow-500 w-full px-2"
+                                className="input input-bordered-yello border-bumblebee w-full px-2"
 
                             />
                         </div>
@@ -128,20 +132,24 @@ const Navbar = () => {
                         <div className="dropdown ml-auto dropdown-end">
                             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                                 <div className="w-10 rounded-full">
-                                    <img className="" src={user?.profile_picture} />
+                                    {user && (
+                                        <img className="" src={user?.profile_picture} />
+                                    )}
                                 </div>
                                 {/* <p className="p-2">{user?.username && user?.username.split(' ')[0]}</p> */}
                             </div>
-                            <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+                            <ul tabIndex={0} className="mt-3 z-[50] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
                                 <li className="border-b border-gray-200">
                                     <p className="p-2">{user?.username}</p>
                                 </li>
+                                <Link to="/profile">
                                 <li>
                                     <a className="justify-between">
                                         Profile
                                         <span className="badge">New</span>
                                     </a>
                                 </li>
+                                </Link>
                                 <li><a>Settings</a></li>
                                 <li><a onClick={() => handleLogout()}>Logout</a></li>
                             </ul>
@@ -173,7 +181,7 @@ const Navbar = () => {
 
             {/* Responsive Sidebar*/}
             {user !== null && (
-                <div className={`lg:hidden fixed border-l-4 border-yellow-500 top-0 right-0 h-full z-50 transition-transform duration-300 transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} ${theme === 'dracula' ? 'bg-gray-800' : 'bg-white'}`} style={{ width: '230px' }}>
+                <div className={`lg:hidden fixed border-l-4 border-bumblebee top-0 right-0 h-full z-50 transition-transform duration-300 transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} ${theme === 'dracula' ? 'bg-gray-800' : 'bg-white'}`} style={{ width: '230px' }}>
                     {/* Close button */}
                     <button className="absolute top-1 right-0 mt-2 mr-4 btn btn-square btn-ghost" onClick={toggleMenu}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -185,10 +193,10 @@ const Navbar = () => {
                     <div className="mx-1 my-5">
                         <Link to="/"> <p className="font-extrabold text-2xl">FoodFind</p> </Link>
                         <div className="mb-6 mx-1 my-20">
-                            <Link to="/restaurant" className="flex items-center px-2 border-b border-yellow-500 hover:text-yellow-500">
+                            <Link to="/restaurant" className="flex items-center px-2 border-b border-bumblebee hover:text-yellow-500">
                                 <p className="text-md font-extrabold">Restaurants</p>
                             </Link>
-                            <Link to="/food" className="flex items-center mt-4 px-2 border-b border-yellow-500 hover:text-yellow-500">
+                            <Link to="/food" className="flex items-center mt-4 px-2 border-b border-bumblebee hover:text-yellow-500">
                                 <p className="text-md font-extrabold">Food</p>
                             </Link>
                         </div>
