@@ -17,6 +17,7 @@ function App() {
           <Route path="/profile" element={<UserProfile />} />
           <Route  path="/restaurant/:restaurantId" element={<RestaurantProfile/>}/>
         </Routes>
+        <Footer />
       </Router>
     </div>
   )

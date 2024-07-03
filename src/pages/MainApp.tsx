@@ -60,9 +60,9 @@ const MainApp = () => {
           topPicks.map((pick) => {
             return (
               <SwiperSlide>
-              <div className="bg-primary flex flex-col md:flex-row justify-evenly h-auto md:h-96 items-center text-bold rounded-2xl p-4 md:p-8 mt-14">
-                <div className="w-full md:w-1/2 text-center md:text-left">
-                  <p className="text-2xl uppercase bg-yellow-100 w-max mx-auto md:mx-0 rounded-lg p-1 my-3">
+              <div className="bg-primary flex flex-col md:flex-row justify-evenly h-auto md:h-100 items-center text-bold rounded-2xl p-4 md:p-8 mt-14">
+                <div className="w-full md:w-1/2 text-center md:text-left md:pr-8">
+                  <p className="text-2xl uppercase bg-yellow-100 w-max mx-auto mb-4 md:mx-0 rounded-lg p-1 my-3">
                     Our Top Picks
                   </p>
                   <h1 className="text-4xl uppercase">{pick.restaurant.name}</h1>
