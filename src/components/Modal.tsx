@@ -59,7 +59,7 @@ export function Modal({ title, text, visible, onClose, id, userId,restaurantId }
                             key={value}
                             type="radio"
                             name={`${id}review`}
-                            className="mask mask-heart bg-yellow-400"
+                            className="mask mask-heart gap-0.5 bg-yellow-400"
                             checked={rating === value}
                             onChange={() => handleRatingChange(value)}
                         />

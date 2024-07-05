@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
 // Import Swiper React components
 import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
 import { Tabs, Tab } from '../components/Tabs';
@@ -14,28 +15,53 @@ import 'swiper/css/thumbs';
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 import { Modal } from '../components/Modal';
 import { useParams } from 'react-router-dom';
-import { getRestaurantDetails } from '../utility/api';
+import { getRestaurantDetails, markAsFavorite } from '../utility/api';
 
 
 const RestaurantProfile = () => {
   const user = JSON.parse(localStorage.getItem('user'))
   const { restaurantId } = useParams();
   const [restaurantDetails, setRestaurantDetails] = useState();
+  const [isFavorite, setIsFavorite] = useState(false);
+
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
-      const response = await getRestaurantDetails(restaurantId);
-      setRestaurantDetails(response);
+      try {
+        const response = await getRestaurantDetails(restaurantId);
+        setRestaurantDetails(response);
+        const initialFavoriteState = localStorage.getItem(`restaurant_${restaurantId}_favorite`) === 'true';
+        setIsFavorite(initialFavoriteState); // Set initial favorite state from local storage
+      } catch (error) {
+        console.error('Error fetching restaurant details:', error);
+      }
     };
-    fetchRestaurantDetails()
-  }, [restaurantId])
+
+    fetchRestaurantDetails();
+  }, [restaurantId]);
 
   const swiper = useRef<SwiperClass>(null!);
+
 
   function generateArray(n) {
     return Array.from({ length: n }, (_, i) => i + 1);
   }
-  const isFavourite = true
+
+  // Function to handle marking a restaurant as favorite
+  const toggleFavorite = async () => {
+    try {
+      await markAsFavorite(restaurantId, user.id, !isFavorite);
+      setIsFavorite(!isFavorite); // Toggle favorite state locally
+      localStorage.setItem(`restaurant_${restaurantId}_favorite`, (!isFavorite).toString());
+
+      console.log(`Marked ${restaurantDetails?.name} as ${!isFavorite ? 'favorite' : 'not favorite'}`);
+    } catch (error) {
+      console.error('Error marking favorite:', error);
+    }
+  };
+
   const [showModal, setShowModal] = useState(false)
+
+
   return (
     <section className='md:grid md:grid-cols-5 mt-14 rounded-lg gap-4 md:gap-8'>
       <div className='md:col-span-3 row-span-1 flex justify-center mb-10'>
@@ -92,8 +118,15 @@ const RestaurantProfile = () => {
             </>
           }</p>
           <p className='mt-3 w-full bg-slate-100 rounded-lg p-3 '>{restaurantDetails?.description}</p>
-          <div className='mt-2 flex items-center justify-start gap-3 h-14'>
-            <button className='btn btn-primary w-80 mt-8' onClick={() => setShowModal(true)}>Add Review</button>
+          <div className='mt-2 flex flex-col md:flex-row md:items-center md:justify-between gap-[-1]'>
+            <button className='btn btn-primary w-72 mt-8' onClick={() => setShowModal(true)}>Add Review</button>
+            {/* Favorite button */}
+            <button className='btn btn-primary mt-8 w-72' onClick={toggleFavorite}>
+                {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+              <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-7 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-500'}`} viewBox="0 0 21 22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
           </div>
         </div>
         <div className='h-96'>

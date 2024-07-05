@@ -45,3 +45,21 @@ export const getUserReviews = async (userId: number) => {
     return response.data; // Assuming this returns an array of reviews
 };
 
+
+export const markAsFavorite = async (restaurantId: string, userId: string, addToFavorites: boolean) => {
+    const url = addToFavorites
+        ? 'http://127.0.0.1:8000/api/add-to-favorites/'
+        : 'http://127.0.0.1:8000/api/remove-from-favorites/';
+
+    try {
+        const response = await axios.post(url, {
+            user_id: userId,
+            restaurant_id: restaurantId
+        });
+        // console.log('Response from markAsFavorite:', response);
+        return response.data;
+    } catch (error) {
+        console.error('Error marking favorite:', error); // Log error details
+        throw new Error(`Error marking favorite: ${error.message}`);
+    }
+};

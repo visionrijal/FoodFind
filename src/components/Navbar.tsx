@@ -64,7 +64,7 @@ const Navbar = () => {
             };
             localStorage.setItem('user', JSON.stringify(userData));
             setUser(userData);
-            navigate("/profile"); // Redirect to profile page
+            navigate("/restaurant"); // Redirect to restaurant
         } catch (error) {
             console.log(error);
         }
