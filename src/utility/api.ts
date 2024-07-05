@@ -63,3 +63,15 @@ export const markAsFavorite = async (restaurantId: string, userId: string, addTo
         throw new Error(`Error marking favorite: ${error.message}`);
     }
 };
+
+export const getFavoriteRestaurants = async (userId: number) => {
+    try {
+        // console.log(`Fetching favorite restaurants for user ${userId}`);
+        const response = await axios.get(`http://127.0.0.1:8000/api/favorite-restaurants/${userId}/`);
+        // console.log('Favorite Restaurants Data:', response.data); // Print the data
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching favorite restaurants:', error);
+        throw new Error(`Error fetching favorite restaurants: ${error.message}`);
+    }
+};
