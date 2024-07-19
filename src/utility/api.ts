@@ -1,4 +1,4 @@
-// src/api.js
+// src/api.ts
 import axios from 'axios';
 
 
@@ -38,6 +38,7 @@ export const addReview = async (obj) => {
     )
     return response.data;
 }
+
 export const getUserReviews = async (userId: number) => {
     // console.log(`Fetching user reviews for ${userId}`);
     const response = await axios.get(`http://127.0.0.1:8000/api/user-reviews/${userId}`);
@@ -75,3 +76,22 @@ export const getFavoriteRestaurants = async (userId: number) => {
         throw new Error(`Error fetching favorite restaurants: ${error.message}`);
     }
 };
+
+
+
+
+// const API_URL = 'http://127.0.0.1:8000/api/user-requests/';
+
+// export const submitRestaurant = async (formData) => {
+//     try {
+//         const response = await axios.post(API_URL, formData, {
+//             headers: {
+//                 'Content-Type': 'multipart/form-data'
+//             }
+//         });
+//         return response.data;
+//     } catch (error) {
+//         console.error('Error submitting restaurant data:', error);
+//         throw error;
+//     }
+// };

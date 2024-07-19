@@ -35,8 +35,25 @@ const Home = () => {
 
   return (
     <>
-
-
+      <section className="hero-section py-20 bg-green-200 text-gray-800 relative h-screen">
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/path-to-your-custom-background-image.jpg)' }}></div>
+        <div className="relative z-10 max-w-6xl mx-auto px-8 flex flex-col justify-center h-full">
+          <h1 className="text-5xl font-extrabold mb-8 font-custom">Discover Your New Favorite Restaurant</h1>
+          <p className="text-lg mb-12">Explore the best restaurants in your area, and discover new flavors and cuisines.</p>
+          <div className="search-bar flex mt-4">
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search for restaurants, cuisines, or dishes"
+              className="w-full px-4 py-2 text-lg rounded-lg border border-gray-300 mr-4 shadow-lg"
+            />
+            <button className="bg-yellow-400 hover:bg-yellow-500 text-lg font-bold py-2 px-4 rounded-lg shadow-lg">
+              Search
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Featured Restaurants Section */}
       <section className="py-8">
@@ -46,8 +63,8 @@ const Home = () => {
             topPicks.map((pick) => {
               return (
                 <SwiperSlide>
-                  <div className="bg-primary flex flex-col md:flex-row justify-evenly h-auto md:h-100 items-center text-bold rounded-2xl p-4 md:p-8 mt-14">
-                    <div className="w-full md:w-1/2 text-center md:text-left md:pr-8">
+                  <div className="bg-bumblebee flex flex-col md:flex-row justify-evenly h-auto md:h-100 items-center text-bold rounded-2xl p-4 md:p-8 mt-14">
+                    <div className="w-full md:w-1/2 text-center text-primary-content md:text-left md:pr-8">
                       <h1 className="text-4xl uppercase">{pick.restaurant.name}</h1>
                       <p>{pick.restaurant.location}</p>
                       <p className="line-clamp-3 mt-5">

@@ -3,6 +3,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import AddRestaurantModal from './AddRestaurantModal.tsx';
 
 // assets
 import sun from "../assets/sun.svg";
@@ -32,7 +33,9 @@ const Navbar = () => {
 
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false); // State for menu toggle
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [user, setUser] = useState(null);
+
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -57,17 +60,17 @@ const Navbar = () => {
                 const res = await axios.post("http://localhost:8000/api/google-login/", {
                     token: tokenResponse.access_token
                 });
-            // Store user details including joined date/time in localStorage
-            const userData = {
-                ...res.data,
-                joined: new Date().toISOString() // Capture current time
-            };
-            localStorage.setItem('user', JSON.stringify(userData));
-            setUser(userData);
-            navigate("/restaurant"); // Redirect to restaurant
-        } catch (error) {
-            console.log(error);
-        }
+                // Store user details including joined date/time in localStorage
+                const userData = {
+                    ...res.data,
+                    joined: new Date().toISOString() // Capture current time
+                };
+                localStorage.setItem('user', JSON.stringify(userData));
+                setUser(userData);
+                navigate("/restaurant"); // Redirect to restaurant
+            } catch (error) {
+                console.log(error);
+            }
         }
     });
 
@@ -75,8 +78,24 @@ const Navbar = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
 
     return (
+        <>
+        {/* Overlay */}
+        {isMenuOpen && (
+            <div
+                className="fixed inset-0 bg-black bg-opacity-50 z-40"
+                onClick={toggleMenu}
+            ></div>
+        )}
         <nav className="flex justify-between items-center px-4 py-2">
             <Link to="/"> <p className="font-extrabold text-2xl mr-20"> FoodFind </p></Link>
 
@@ -86,13 +105,14 @@ const Navbar = () => {
                 ) :
                 <>
                     <div className="hidden lg:flex items-center lg:space-x-4">
-                        <Link to="/restaurant" className="text-2xl font-bold relative group mr-5">
-                            <span className="hover:underline">Restaurants</span>
-                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-bumblebee transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                        <Link to="/restaurant" className="text-2xl font-bold relative group mr-6">
+                            <span className="relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-bumblebee after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center">Restaurants</span>
                         </Link>
-                        <Link to="/food" className="text-2xl font-bold relative group">
-                            <span className="hover:underline">Food</span>
-                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-bumblebee transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                        <Link to="/food" className="text-2xl font-bold relative group mr-6">
+                            <span className="relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-bumblebee after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center">Food</span>
+                        </Link>
+                        <Link to="/map" className="text-2xl font-bold relative group pl-6">
+                            <span className="relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-bumblebee after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center">Find Restaurants</span>
                         </Link>
                     </div>
 
@@ -101,6 +121,9 @@ const Navbar = () => {
 
                     {/* Default Navbar*/}
                     <div className="hidden lg:flex justify-between items-center lg:space-x-4">
+                        {/* Add Restaurant Button */}
+                        <button onClick={openModal} className="btn btn-primary bg-bumblebee border-none hover:bg-yellow-500 mr-4">Add a Restaurant</button>
+
                         {/* Search bar */}
                         <div className="form-control mr-10">
                             <input
@@ -113,7 +136,7 @@ const Navbar = () => {
                     </div>
 
                     {/* Theme Toggle */}
-                    <div className="flex-none mr-3">
+                    <div className="flex-none ml-6 mr-3">
                         <button className="btn btn-square btn-ghost">
                             <label className="swap swap-rotate w-12 h-12">
                                 <input
@@ -143,12 +166,12 @@ const Navbar = () => {
                                     <p className="p-2">{user?.username}</p>
                                 </li>
                                 <Link to="/profile">
-                                <li>
-                                    <a className="justify-between">
-                                        Profile
-                                        <span className="badge">New</span>
-                                    </a>
-                                </li>
+                                    <li>
+                                        <a className="justify-between">
+                                            Profile
+                                            <span className="badge">New</span>
+                                        </a>
+                                    </li>
                                 </Link>
                                 {/* <li><a>Settings</a></li> */}
                                 <li><a onClick={() => handleLogout()}>Logout</a></li>
@@ -181,7 +204,7 @@ const Navbar = () => {
 
             {/* Responsive Sidebar*/}
             {user !== null && (
-                <div className={`lg:hidden fixed border-l-4 border-bumblebee top-0 right-0 h-full z-50 transition-transform duration-300 transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} ${theme === 'dracula' ? 'bg-gray-800' : 'bg-white'}`} style={{ width: '230px' }}>
+                <div className={`lg:hidden fixed border-l-4 border-bumblebee top-0 right-0 h-full z-50 transition-transform duration-500 transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} ${theme === 'dracula' ? 'bg-gray-800' : 'bg-white'}`} style={{ width: '230px' }}>
                     {/* Close button */}
                     <button className="absolute top-1 right-0 mt-2 mr-4 btn btn-square btn-ghost" onClick={toggleMenu}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -192,33 +215,42 @@ const Navbar = () => {
                     {/* Menu Items */}
                     <div className="mx-1 my-5">
                         <Link to="/"> <p className="font-extrabold text-2xl">FoodFind</p> </Link>
-                        <div className="mb-6 mx-1 my-20">
-                            <Link to="/restaurant" className="flex items-center px-2 border-b border-bumblebee hover:text-yellow-500">
-                                <p className="text-md font-extrabold">Restaurants</p>
-                            </Link>
-                            <Link to="/food" className="flex items-center mt-4 px-2 border-b border-bumblebee hover:text-yellow-500">
-                                <p className="text-md font-extrabold">Food</p>
-                            </Link>
-                        </div>
-
                         {/* Search bar (duplicate for responsiveness) */}
                         <div className="form-control">
                             <input
                                 type="text"
                                 placeholder="Search"
-                                className="input input-bordered border-yellow-500 w-full px-2"
+                                className="input input-bordered border-yellow-500 mt-10 w-full px-2"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         handleSearch(e.currentTarget.value);
                                     }
                                 }}
                             />
+                            <div className="mb-6 mx-1 my-10">
+                                <Link to="/restaurant" className="flex items-center px-2 border-b border-bumblebee hover:text-yellow-500">
+                                    <p className="text-md font-extrabold">Restaurants</p>
+                                </Link>
+                                <Link to="/food" className="flex items-center mt-4 px-2 border-b border-bumblebee hover:text-yellow-500">
+                                    <p className="text-md font-extrabold">Food</p>
+                                </Link>
+                                <Link to="/map" className="flex items-center mt-4 px-2 border-b border-bumblebee hover:text-yellow-500">
+                                    <p className="text-md font-extrabold">Find Restaurants</p>
+                                </Link>
+                                {/* Add Restaurant Button */}
+                                <button onClick={openModal} className="btn btn-primary mt-4 bg-bumblebee border-none hover:bg-yellow-500 mr-4">Add a Restaurant</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             )}
 
+
+            {/* Add Restaurant Modal */}
+            {isModalOpen && <AddRestaurantModal closeModal={closeModal} />}
+
         </nav>
+        </>
     )
 }
 

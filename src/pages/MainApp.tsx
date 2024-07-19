@@ -60,8 +60,8 @@ const MainApp = () => {
           topPicks.map((pick) => {
             return (
               <SwiperSlide>
-              <div className="bg-primary flex flex-col md:flex-row justify-evenly h-auto md:h-100 items-center text-bold rounded-2xl p-4 md:p-8 mt-14">
-                <div className="w-full md:w-1/2 text-center md:text-left md:pr-8">
+              <div className="bg-bumblebee flex flex-col md:flex-row justify-evenly h-auto md:h-100 items-center text-bold rounded-2xl p-4 md:p-8 mt-14">
+                <div className="w-full md:w-1/2 text-center text-primary-content md:text-left md:pr-8">
                   <p className="text-2xl uppercase bg-yellow-100 w-max mx-auto mb-4 md:mx-0 rounded-lg p-1 my-3">
                     Our Top Picks
                   </p>
@@ -96,7 +96,7 @@ const MainApp = () => {
         <p className='text-5xl text font-extrabold'>Restaurants</p>
         <div className="collapse collapse-arrow bg-primay mt-4">
           <input type="checkbox" className="peer" />
-          <div className="collapse-title bg-primary text-primary-content peer-checked:bg-neutral-50 peer-checked:text-secondary-content">
+          <div className="collapse-title bg-bumblebee text-primary-content peer-checked:bg-neutral-50 peer-checked:text-secondary-content">
             TAGS
           </div>
           <div className="collapse-content bg-primary text-primary-content peer-checked:bg-neutral-50 peer-checked:text-secondary-content">

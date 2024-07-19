@@ -117,11 +117,12 @@ const RestaurantProfile = () => {
               <p>{restaurantDetails?.opening_hours}</p>
             </>
           }</p>
-          <p className='mt-3 w-full bg-slate-100 rounded-lg p-3 '>{restaurantDetails?.description}</p>
+
+          <p className='mt-3 w-full bg-slate-100 text-primary-content rounded-lg p-3 '>{restaurantDetails?.description}</p>
           <div className='mt-2 flex flex-col md:flex-row md:items-center md:justify-between gap-[-1]'>
-            <button className='btn btn-primary w-72 mt-8' onClick={() => setShowModal(true)}>Add Review</button>
+            <button className='btn bg-bumblebee hover:bg-yellow-500 border-none btn-primary w-72 mt-8' onClick={() => setShowModal(true)}>Add Review</button>
             {/* Favorite button */}
-            <button className='btn btn-primary mt-8 w-72' onClick={toggleFavorite}>
+            <button className='btn btn-primary hover:bg-yellow-500 bg-bumblebee border-none mt-8 w-72' onClick={toggleFavorite}>
                 {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
               <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-7 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-500'}`} viewBox="0 0 21 22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -165,6 +166,8 @@ const RestaurantProfile = () => {
           </Tabs>
         </div>
       </div>
+
+
       <div className='mt-48 md:mt-0 md:col-span-3 md:row-span-3 h-full w-full p-2'>
         <p className='text-3xl'>Reviews</p>
         <div className='tags my-2 flex flex-wrap gap-2 justify-center'>

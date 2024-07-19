@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const Footer = () => {
   const navigate = useNavigate();
   return (
-    <footer className="footer footer-center mb-0 pb-4 mt-8 shadow-xl">
+    <footer className="footer footer-center mt-6">
       <aside>
           <p className="font-extrabold text-2xl"> FoodFind </p>
           <a href="https://github.com/visionrijal/FoodFind" target="_blank">
