@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 
@@ -8,16 +8,11 @@ interface FormData {
     description: string;
     openingHours: string;
     price: string;
-    menu: FileList;
 }
 
-const AddRestaurantModal = ({ closeModal }) => {
+const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
-
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        console.log('Token at component mount:', token);
-    }, []);
+    const [notification, setNotification] = useState<string | null>(null);
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         const formData = new FormData();
@@ -26,33 +21,27 @@ const AddRestaurantModal = ({ closeModal }) => {
         formData.append('description', data.description);
         formData.append('opening_hours', data.openingHours);
         formData.append('price', data.price);
-        if (data.menu && data.menu.length > 0) {
-            formData.append('menu', data.menu[0]);
-        }
 
         try {
-            const token = localStorage.getItem('token');
-            console.log('Retrieved token on submit:', token);
-            if (!token) {
-                alert('Authentication token is missing. Please log in again.');
-                return;
-            }
-
             const response = await axios.post('http://127.0.0.1:8000/api/add-restaurant/', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`,
                 },
             });
 
             console.log('Restaurant added successfully', response.data);
+            setNotification('Restaurant added successfully!');
             reset();
-            closeModal();
+            setTimeout(() => {
+                setNotification(null); // Hide the notification after 2 seconds
+                closeModal();
+            }, 2000);
         } catch (error) {
             console.error('Error adding restaurant:', error);
-            alert('An error occurred while adding the restaurant. Please try again.');
+            setNotification('An error occurred while adding the restaurant. Please try again.');
         }
     };
+
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -104,22 +93,21 @@ const AddRestaurantModal = ({ closeModal }) => {
                         />
                         {errors.price && <p className="text-red-500">{errors.price.message}</p>}
                     </div>
-                    <div className="mb-4">
-                        <label className="block text-sm font-bold mb-2">Menu Image</label>
-                        <input
-                            type="file"
-                            {...register('menu')}
-                            className="file-input file-input-bordered w-full"
-                        />
-                    </div>
                     <div className="flex justify-end">
                         <button type="button" onClick={closeModal} className="btn btn-secondary mr-2">Cancel</button>
                         <button type="submit" className="btn btn-primary">Submit</button>
                     </div>
                 </form>
+                {notification && (
+                    <div className="absolute top-2 right-2 p-4 bg-green-500 text-white rounded-lg shadow-lg">
+                        {notification}
+                    </div>
+                )}
             </div>
         </div>
     );
 };
 
 export default AddRestaurantModal;
+
+   
