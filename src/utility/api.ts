@@ -1,7 +1,6 @@
 // src/api.ts
 import axios from 'axios';
 
-
 export const getRestaurantDetails = async (id) => {
     console.log("id " + id)
     const response = await axios.get(
@@ -13,9 +12,11 @@ export const getRestaurantDetails = async (id) => {
 
 export const getRestaurantList = async (selectedTags) => {
     if(selectedTags){
-        const tagsQuery = selectedTags.map(tag => `tags=${encodeURIComponent(tag)}`).join('&');
-        const url = `http://127.0.0.1:8000/api/restaurants/?${tagsQuery}`;
-        const response = await axios.get(url);
+        // const tagsQuery = selectedTags.map(tag => `tags=${encodeURIComponent(tag)}`).join('&');
+        const url = `http://127.0.0.1:8000/api/restaurants/`;
+        const response = await axios.get(url,{
+            params: { recommend: 'true', user_id: JSON.parse(localStorage.getItem("user")).id},
+          });
         console.log(url);
         
         return response.data
@@ -70,7 +71,11 @@ export const getFavoriteRestaurants = async (userId: number) => {
         // console.log(`Fetching favorite restaurants for user ${userId}`);
         const response = await axios.get(`http://127.0.0.1:8000/api/favorite-restaurants/${userId}/`);
         // console.log('Favorite Restaurants Data:', response.data); // Print the data
+       response.data.forEach((data)=>{
+        localStorage.setItem(`restaurant_${data.id}_favorite`,"true");
+       })
         return response.data;
+        
     } catch (error) {
         console.error('Error fetching favorite restaurants:', error);
         throw new Error(`Error fetching favorite restaurants: ${error.message}`);

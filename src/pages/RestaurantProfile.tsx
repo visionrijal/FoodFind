@@ -25,6 +25,16 @@ const RestaurantProfile = () => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
+    
+    const setLocalFavouriteRestaurant = async ()=>{
+         // console.log(`Fetching favorite restaurants for user ${userId}`);
+         const response = await axios.get(`http://127.0.0.1:8000/api/favorite-restaurants/${user.id}/`);
+         // console.log('Favorite Restaurants Data:', response.data); // Print the data
+        response.data.forEach((data)=>{
+         localStorage.setItem(`restaurant_${data.id}_favorite`,"true");
+        })
+    }
+    setLocalFavouriteRestaurant()
     const fetchRestaurantDetails = async () => {
       try {
         const response = await getRestaurantDetails(restaurantId);
