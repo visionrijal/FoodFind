@@ -167,9 +167,6 @@ const Navbar = () => {
                         <Link to="/restaurant" className="text-2xl font-bold relative group mr-6">
                             <span className="relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-bumblebee after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center">Restaurants</span>
                         </Link>
-                        <Link to="/food" className="text-2xl font-bold relative group mr-6">
-                            <span className="relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-bumblebee after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center">Food</span>
-                        </Link>
                         <Link to="/map" className="text-2xl font-bold relative group pl-6">
                             <span className="relative text-xl w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-bumblebee after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center">Find Restaurants</span>
                         </Link>
@@ -341,9 +338,6 @@ const Navbar = () => {
                             <div className="mb-6 mx-1 my-10">
                                 <Link to="/restaurant" className="flex items-center px-2 border-b border-bumblebee hover:text-yellow-500">
                                     <p className="text-md font-extrabold">Restaurants</p>
-                                </Link>
-                                <Link to="/food" className="flex items-center mt-4 px-2 border-b border-bumblebee hover:text-yellow-500">
-                                    <p className="text-md font-extrabold">Food</p>
                                 </Link>
                                 <Link to="/map" className="flex items-center mt-4 px-2 border-b border-bumblebee hover:text-yellow-500">
                                     <p className="text-md font-extrabold">Find Restaurants</p>

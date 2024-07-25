@@ -65,6 +65,7 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
                             type="text"
                             {...register('name', { required: 'Name is required' })}
                             className="input input-bordered w-full"
+                            placeholder='Enter restaurant name'
                         />
                         {errors.name && <p className="text-red-500">{errors.name.message}</p>}
                     </div>
@@ -74,6 +75,7 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
                             type="text"
                             {...register('location', { required: 'Location is required' })}
                             className="input input-bordered w-full"
+                            placeholder='Enter location'
                         />
                         {errors.location && <p className="text-red-500">{errors.location.message}</p>}
                     </div>
@@ -82,6 +84,7 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
                         <textarea
                             {...register('description', { required: 'Description is required' })}
                             className="textarea textarea-bordered w-full"
+                            placeholder='Enter small description about this place'
                         ></textarea>
                         {errors.description && <p className="text-red-500">{errors.description.message}</p>}
                     </div>
@@ -91,6 +94,7 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
                             type="text"
                             {...register('openingHours', { required: 'Opening hours are required' })}
                             className="input input-bordered w-full"
+                            placeholder='Enter the opening hours'
                         />
                         {errors.openingHours && <p className="text-red-500">{errors.openingHours.message}</p>}
                     </div>
@@ -100,6 +104,7 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
                             type="text"
                             {...register('price', { required: 'Price is required' })}
                             className="input input-bordered w-full"
+                            placeholder='Enter the price range'
                         />
                         {errors.price && <p className="text-red-500">{errors.price.message}</p>}
                     </div>
