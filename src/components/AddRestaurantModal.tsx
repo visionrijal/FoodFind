@@ -8,6 +8,7 @@ interface FormData {
     description: string;
     openingHours: string;
     price: string;
+    menu: FileList;
 }
 
 const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
@@ -15,12 +16,17 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
     const [notification, setNotification] = useState<string | null>(null);
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
         const formData = new FormData();
         formData.append('name', data.name);
         formData.append('location', data.location);
         formData.append('description', data.description);
         formData.append('opening_hours', data.openingHours);
         formData.append('price', data.price);
+        formData.append('user_id', user.id);  
+        if (data.menu.length > 0) {
+            formData.append('menu', data.menu[0]);
+        }
 
         try {
             const response = await axios.post('http://127.0.0.1:8000/api/add-restaurant/', formData, {
@@ -29,24 +35,28 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
                 },
             });
 
-            console.log('Restaurant added successfully', response.data);
+            // console.log('Restaurant added successfully', response.data);
             setNotification('Restaurant added successfully!');
             reset();
             setTimeout(() => {
-                setNotification(null); // Hide the notification after 2 seconds
+                setNotification(null); // Hide the notification after 1 second
                 closeModal();
-            }, 2000);
+            }, 1000);
         } catch (error) {
             console.error('Error adding restaurant:', error);
             setNotification('An error occurred while adding the restaurant. Please try again.');
         }
     };
 
-
     return (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
             <div className="fixed inset-0 bg-black opacity-50" onClick={closeModal}></div>
-            <div className="bg-white rounded-lg p-6 w-11/12 md:w-1/2 lg:w-1/3 relative">
+            <div className="relative bg-white text-black rounded-lg p-6 max-w-md max-h-[90vh] overflow-y-auto">
+                <button onClick={closeModal} className="absolute top-3 right-5 text-gray-600 hover:text-gray-900" aria-label="Close">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
                 <h2 className="text-2xl mb-4">Request to Add a Restaurant</h2>
                 <form onSubmit={handleSubmit(onSubmit)} method="post" encType="multipart/form-data">
                     <div className="mb-4">
@@ -93,9 +103,17 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
                         />
                         {errors.price && <p className="text-red-500">{errors.price.message}</p>}
                     </div>
+                    <div className="mb-4">
+                        <label className="block text-sm font-bold mb-2">Menu Image</label>
+                        <input
+                            type="file"
+                            {...register('menu')}
+                            className="file-input file-input-bordered w-full"
+                        />
+                    </div>
                     <div className="flex justify-end">
-                        <button type="button" onClick={closeModal} className="btn btn-secondary mr-2">Cancel</button>
-                        <button type="submit" className="btn btn-primary">Submit</button>
+                        <button type="button" onClick={closeModal} className="btn bg-bumblebee border-none hover:bg-yellow-500 btn-secondary mr-2">Cancel</button>
+                        <button type="submit" className="btn btn-primary bg-bumblebee border-none hover:bg-yellow-500">Submit</button>
                     </div>
                 </form>
                 {notification && (
@@ -109,5 +127,3 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
 };
 
 export default AddRestaurantModal;
-
-   
