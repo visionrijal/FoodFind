@@ -8,14 +8,14 @@ import AddRestaurantModal from './AddRestaurantModal.tsx';
 // assets
 import sun from "../assets/sun.svg";
 import moon from "../assets/moon.svg";
-
+import { getRestaurantList } from '../utility/api';
 
 const Navbar = () => {
 
     // use theme from local storage if available or set light theme
-    const [theme, setTheme] = useState(
-        localStorage.getItem("theme") ? localStorage.getItem("theme") : "bumblebee"
-    );
+    const [theme, setTheme] = useState(localStorage.getItem("theme") ? localStorage.getItem("theme") : "bumblebee");
+    const [searchResults, setSearchResults] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const handleToggle = (e) => {
         if (e.target.checked) {
@@ -86,6 +86,19 @@ const Navbar = () => {
         setIsModalOpen(false);
     };
 
+    const handleSearch = async (query) => {
+        setSearchQuery(query);
+        if (query.length >= 3) { 
+            try {
+                const results = await getRestaurantList([query]);
+                setSearchResults(results);
+            } catch (error) {
+                console.error('Error searching for restaurants:', error);
+            }
+        } else {
+            setSearchResults([]);
+        }
+    };
 
     return (
         <>
@@ -126,13 +139,25 @@ const Navbar = () => {
 
                         {/* Search bar */}
                         <div className="form-control mr-10">
-                            <input
-                                type="text"
-                                placeholder="Search"
-                                className="input input-bordered-yello border-bumblebee w-full px-2"
-
-                            />
-                        </div>
+                                <input
+                                    type="text"
+                                    placeholder="Search"
+                                    className="input input-bordered-yello border-bumblebee w-full px-2"
+                                    value={searchQuery}
+                                    onChange={(e) => handleSearch(e.target.value)}
+                                />
+                                {searchResults.length > 0 && (
+                                    <ul className="absolute bg-white border border-gray-200 mt-2 w-full z-10">
+                                        {searchResults.map(result => (
+                                            <li key={result.id} className="p-2 hover:bg-gray-100">
+                                                <Link to={`/restaurant/${result.id}`} onClick={() => setSearchQuery('')}>
+                                                    {result.name}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
                     </div>
 
                     {/* Theme Toggle */}
