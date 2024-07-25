@@ -75,14 +75,12 @@ const RestaurantProfile = () => {
     ? Array.from(new Set(restaurantDetails.menu_items.map((item: any) => item.category)))
     : [];
 
-  console.log("Menu Items:", restaurantDetails?.menu_items);
-
 
 
   return (
     <section className='md:grid md:grid-cols-5 mt-14 rounded-lg gap-4 md:gap-8'>
       <div className='md:col-span-3 row-span-1 flex justify-center mb-10'>
-        <div className='max-w-[600px] md:max-w-[100%]'>
+        <div className='w-full max-w-full md:max-w-[100%]'>
           <Swiper
             loop={true}
             pagination={true}
@@ -166,7 +164,7 @@ const RestaurantProfile = () => {
             </Tab>
             <Tab label="Menu">
               <div className="p-1 h-96 overflow-scroll rounded-xl" style={{ scrollbarGutter: "stable" }}>
-                <div className='flex flex-wrap gap-8 mb-4'>
+                <div className='flex flex-wrap gap-4 mb-4'>
                 <a
                     className={`category-link ${selectedCategory === null ? 'selected' : ''}`}
                     onClick={() => handleCategoryChange(null)}

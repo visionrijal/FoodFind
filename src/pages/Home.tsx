@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -7,6 +7,9 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination, Autoplay } from 'swiper/modules';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { getRestaurantList } from '../utility/api';
+
 
 // Images 
 import back from '../assets/back.png'
@@ -15,8 +18,11 @@ import broo from '../assets/team/broo.jpg';
 import bishnu from '../assets/team/bishnu.jpg';
 
 const Home = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]); // Ensure suggestions is defined
   const [topPicks, setTopPicks] = useState([]);
+  const searchRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTopPicks = async () => {
@@ -31,6 +37,65 @@ const Home = () => {
     { id: 2, name: 'Vision Rijal', role: 'Frontend', imageUrl: broo },
     { id: 3, name: 'Bishnu Timilsena', role: 'Backend', imageUrl: bishnu },
   ];
+
+  const handleSearch = async (query) => {
+    if (query.length >= 1) {
+      try {
+        const results = await getRestaurantList([query]);
+        // Find the restaurant that matches exactly with the search query
+        const matchedRestaurant = results.find(
+          result => result.name.toLowerCase() === query.toLowerCase()
+        );
+        if (matchedRestaurant) {
+          navigate(`/restaurant/${matchedRestaurant.id}`);
+        } else {
+          // Optionally handle cases where no exact match is found
+          console.log("No exact match found");
+        }
+      } catch (error) {
+        console.error('Error searching for restaurants:', error);
+      }
+    }
+  };
+
+  const handleSearchButtonClick = () => {
+    handleSearch(searchQuery);
+  };
+
+  const handleInputChange = async (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query.length >= 3) {
+      try {
+        const results = await getRestaurantList([query]);
+        const filteredSuggestions = results
+          .filter(result => result.name.toLowerCase().startsWith(query.toLowerCase()))
+          .slice(0, 5);
+        setSuggestions(filteredSuggestions);
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+      }
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSuggestionClick = (name) => {
+    setSearchQuery(name);
+    setSuggestions([]);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setSuggestions([]);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <>
@@ -69,14 +134,32 @@ const Home = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search for restaurants, cuisines, or dishes"
-              className="w-full px-4 py-2 text-lg rounded-lg border border-gray-300 shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-300"
-            />
-            <button className="bg-yellow-400 hover:bg-yellow-500 text-lg font-bold py-2 px-4 rounded-lg shadow-lg mt-4 sm:mt-0 sm:ml-4 transition-transform transform hover:scale-105">
+            <div ref={searchRef} className="relative w-full sm:w-3/4 lg:w-1/2 xl:w-3/4">
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={handleInputChange}
+                placeholder="Search for restaurants, cuisines, or dishes"
+                className="w-full px-4 py-2 text-lg rounded-lg border border-gray-300 shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-300"
+              />
+              {suggestions.length > 0 && (
+                <div className="absolute top-full left-0 w-full bg-white border z-50 border-gray-300 rounded-lg mt-1 shadow-lg">
+                  {suggestions.map(suggestion => (
+                    <div
+                      key={suggestion.id}
+                      onClick={() => handleSuggestionClick(suggestion.name)}
+                      className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                    >
+                      {suggestion.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              onClick={handleSearchButtonClick}
+              className="bg-yellow-400 hover:bg-yellow-500 text-lg font-bold py-2 px-4 rounded-lg shadow-lg mt-4 sm:mt-0 sm:ml-4 transition-transform transform hover:scale-105"
+            >
               Search
             </button>
           </motion.div>

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { useGoogleLogin } from '@react-oauth/google';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import AddRestaurantModal from './AddRestaurantModal.tsx';
@@ -16,6 +16,9 @@ const Navbar = () => {
     const [theme, setTheme] = useState(localStorage.getItem("theme") ? localStorage.getItem("theme") : "bumblebee");
     const [searchResults, setSearchResults] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [selectedIndex, setSelectedIndex] = useState(-1);
+    const searchRef = useRef(null);
+    
 
     const handleToggle = (e) => {
         if (e.target.checked) {
@@ -88,15 +91,58 @@ const Navbar = () => {
 
     const handleSearch = async (query) => {
         setSearchQuery(query);
-        if (query.length >= 3) { 
+        if (query.length >= 1) {
             try {
                 const results = await getRestaurantList([query]);
-                setSearchResults(results);
+                const filteredResults = results
+                    .filter(result => result.name.toLowerCase().startsWith(query.toLowerCase()))
+                    .slice(0, 5);
+                setSearchResults(filteredResults);
+                setSelectedIndex(-1); // Reset selectedIndex when search results are updated
             } catch (error) {
                 console.error('Error searching for restaurants:', error);
             }
         } else {
             setSearchResults([]);
+            setSelectedIndex(-1);
+        }
+    };
+
+    const handleClearSearch = () => {
+        setSearchQuery('');
+        setSearchResults([]);
+        setSelectedIndex(-1);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (searchRef.current && !searchRef.current.contains(event.target)) {
+                setSearchQuery('');
+                setSearchResults([]);
+                setSelectedIndex(-1);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleSuggestionClick = (id) => {
+        navigate(`/restaurant/${id}`);
+        setSearchQuery('');
+        setSearchResults([]);
+        setSelectedIndex(-1);
+    };
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
+                handleSuggestionClick(searchResults[selectedIndex].id);
+            }
+        } else if (event.key === 'ArrowDown') {
+            setSelectedIndex((prevIndex) => (prevIndex + 1) % searchResults.length);
+        } else if (event.key === 'ArrowUp') {
+            setSelectedIndex((prevIndex) => (prevIndex - 1 + searchResults.length) % searchResults.length);
         }
     };
 
@@ -138,26 +184,41 @@ const Navbar = () => {
                         <button onClick={openModal} className="btn btn-primary bg-bumblebee border-none hover:bg-yellow-500 mr-4">Add a Restaurant</button>
 
                         {/* Search bar */}
-                        <div className="form-control mr-10">
-                                <input
-                                    type="text"
-                                    placeholder="Search"
-                                    className="input input-bordered-yello border-bumblebee w-full px-2"
-                                    value={searchQuery}
-                                    onChange={(e) => handleSearch(e.target.value)}
-                                />
-                                {searchResults.length > 0 && (
-                                    <ul className="absolute bg-white border border-gray-200 mt-2 w-full z-10">
-                                        {searchResults.map(result => (
-                                            <li key={result.id} className="p-2 hover:bg-gray-100">
-                                                <Link to={`/restaurant/${result.id}`} onClick={() => setSearchQuery('')}>
-                                                    {result.name}
-                                                </Link>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
+                        <div ref={searchRef} className="relative form-control mr-10">
+                            <input
+                                type="text"
+                                placeholder="Search"
+                                className="input input-bordered-yello border-bumblebee w-full px-2"
+                                value={searchQuery}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                            />
+                            {searchQuery && (
+                                <button
+                                    type="button"
+                                    className="absolute top-1/2 right-2 transform -translate-y-1/2"
+                                    onClick={handleClearSearch}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            )}
+                            {searchResults.length > 0 && (
+                                <ul className="absolute bg-white border border-gray-200 mt-12 w-full z-10 search-list">
+                                    {searchResults.map((result, index) => (
+                                        <li 
+                                            key={result.id} 
+                                            className={`search-list-item cursor-pointer p-2 hover:bg-gray-100 ${selectedIndex === index ? 'bg-gray-200' : ''}`}
+                                            onClick={() => handleSuggestionClick(result.id)}
+                                            onMouseEnter={() => setSelectedIndex(index)}
+                                        >
+                                            {result.name}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
                     </div>
 
                     {/* Theme Toggle */}
@@ -241,17 +302,42 @@ const Navbar = () => {
                     <div className="mx-1 my-5">
                         <Link to="/"> <p className="font-extrabold text-2xl">FoodFind</p> </Link>
                         {/* Search bar (duplicate for responsiveness) */}
-                        <div className="form-control">
-                            <input
+                         {/* Search bar */}
+                        <div ref={searchRef} className="relative form-control mt-10">
+                        <input
                                 type="text"
                                 placeholder="Search"
-                                className="input input-bordered border-yellow-500 mt-10 w-full px-2"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        handleSearch(e.currentTarget.value);
-                                    }
-                                }}
+                                className="input input-bordered-yello border-bumblebee w-full px-2"
+                                value={searchQuery}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                onKeyDown={handleKeyDown}
                             />
+                            {searchQuery && (
+                                <button
+                                    type="button"
+                                    className="absolute top-1/2 right-2 transform -translate-y-1/2"
+                                    onClick={handleClearSearch}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            )}
+                            {searchResults.length > 0 && (
+                                <ul className="absolute bg-white border border-gray-200 mt-12 w-full z-10 search-list">
+                                    {searchResults.map((result, index) => (
+                                        <li 
+                                            key={result.id} 
+                                            className={`search-list-item cursor-pointer p-2 hover:bg-gray-100 ${selectedIndex === index ? 'bg-gray-200' : ''}`}
+                                            onClick={() => handleSuggestionClick(result.id)}
+                                            onMouseEnter={() => setSelectedIndex(index)}
+                                        >
+                                            {result.name}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
                             <div className="mb-6 mx-1 my-10">
                                 <Link to="/restaurant" className="flex items-center px-2 border-b border-bumblebee hover:text-yellow-500">
                                     <p className="text-md font-extrabold">Restaurants</p>
@@ -265,7 +351,6 @@ const Navbar = () => {
                                 {/* Add Restaurant Button */}
                                 <button onClick={openModal} className="btn btn-primary mt-4 bg-bumblebee border-none hover:bg-yellow-500 mr-4">Add a Restaurant</button>
                             </div>
-                        </div>
                     </div>
                 </div>
             )}
