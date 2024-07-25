@@ -6,14 +6,13 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination, Autoplay } from 'swiper/modules';
-
+import { motion } from 'framer-motion';
 
 // Images 
-import backSvg from '../assets/back.jpg';
+import back from '../assets/back.png'
 import me from '../assets/team/me.jpg';
 import broo from '../assets/team/broo.jpg';
 import bishnu from '../assets/team/bishnu.jpg';
-
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,24 +34,53 @@ const Home = () => {
 
   return (
     <>
-      <section className="hero-section py-20 bg-green-200 text-gray-800 relative h-screen">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/path-to-your-custom-background-image.jpg)' }}></div>
-        <div className="relative z-10 max-w-6xl mx-auto px-8 flex flex-col justify-center h-full">
-          <h1 className="text-5xl font-extrabold mb-8 font-custom">Discover Your New Favorite Restaurant</h1>
-          <p className="text-lg mb-12">Explore the best restaurants in your area, and discover new flavors and cuisines.</p>
-          <div className="search-bar flex mt-4">
+      <section className="relative h-screen w-full overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-fixed"
+          style={{ backgroundImage: `url(${back})`, backgroundSize: 'cover', backgroundPosition: 'center', width: '100%', height: '100%' }}
+        ></div>
+        {/* <div className="absolute inset-0 bg-gray-800 opacity-50"></div>
+ */}
+        <motion.div 
+          className="relative z-10 max-w-6xl mx-auto px-8 flex flex-col justify-center h-full"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+        >
+          <motion.h1 
+            className="text-5xl font-extrabold mb-8 text-black"
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5, type: 'spring' }}
+          >
+            Discover Your New Favorite Restaurant
+          </motion.h1>
+          <motion.p 
+            className="text-lg mb-12 text-black"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.2 }}
+          >
+            Explore the best restaurants in your area, and discover new flavors and cuisines.
+          </motion.p>
+          <motion.div 
+            className="search-bar flex flex-col sm:flex-row mt-4"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
             <input
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for restaurants, cuisines, or dishes"
-              className="w-full px-4 py-2 text-lg rounded-lg border border-gray-300 mr-4 shadow-lg"
+              className="w-full px-4 py-2 text-lg rounded-lg border border-gray-300 shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-300"
             />
-            <button className="bg-yellow-400 hover:bg-yellow-500 text-lg font-bold py-2 px-4 rounded-lg shadow-lg">
+            <button className="bg-yellow-400 hover:bg-yellow-500 text-lg font-bold py-2 px-4 rounded-lg shadow-lg mt-4 sm:mt-0 sm:ml-4 transition-transform transform hover:scale-105">
               Search
             </button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Featured Restaurants Section */}

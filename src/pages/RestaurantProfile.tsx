@@ -19,28 +19,27 @@ import { getRestaurantDetails, markAsFavorite } from '../utility/api';
 
 
 const RestaurantProfile = () => {
-  const user = JSON.parse(localStorage.getItem('user'))
+  const user = JSON.parse(localStorage.getItem('user'));
   const { restaurantId } = useParams();
-  const [restaurantDetails, setRestaurantDetails] = useState();
+  const [restaurantDetails, setRestaurantDetails] = useState<any>(null);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   useEffect(() => {
-    
-    const setLocalFavouriteRestaurant = async ()=>{
-         // console.log(`Fetching favorite restaurants for user ${userId}`);
-         const response = await axios.get(`http://127.0.0.1:8000/api/favorite-restaurants/${user.id}/`);
-         // console.log('Favorite Restaurants Data:', response.data); // Print the data
-        response.data.forEach((data)=>{
-         localStorage.setItem(`restaurant_${data.id}_favorite`,"true");
-        })
-    }
-    setLocalFavouriteRestaurant()
+    const setLocalFavouriteRestaurant = async () => {
+      const response = await axios.get(`http://127.0.0.1:8000/api/favorite-restaurants/${user.id}/`);
+      response.data.forEach((data: any) => {
+        localStorage.setItem(`restaurant_${data.id}_favorite`, "true");
+      });
+    };
+    setLocalFavouriteRestaurant();
+
     const fetchRestaurantDetails = async () => {
       try {
         const response = await getRestaurantDetails(restaurantId);
         setRestaurantDetails(response);
         const initialFavoriteState = localStorage.getItem(`restaurant_${restaurantId}_favorite`) === 'true';
-        setIsFavorite(initialFavoriteState); // Set initial favorite state from local storage
+        setIsFavorite(initialFavoriteState);
       } catch (error) {
         console.error('Error fetching restaurant details:', error);
       }
@@ -51,25 +50,33 @@ const RestaurantProfile = () => {
 
   const swiper = useRef<SwiperClass>(null!);
 
-
-  function generateArray(n) {
+  function generateArray(n: number) {
     return Array.from({ length: n }, (_, i) => i + 1);
   }
 
-  // Function to handle marking a restaurant as favorite
   const toggleFavorite = async () => {
     try {
       await markAsFavorite(restaurantId, user.id, !isFavorite);
-      setIsFavorite(!isFavorite); // Toggle favorite state locally
+      setIsFavorite(!isFavorite);
       localStorage.setItem(`restaurant_${restaurantId}_favorite`, (!isFavorite).toString());
-
       console.log(`Marked ${restaurantDetails?.name} as ${!isFavorite ? 'favorite' : 'not favorite'}`);
     } catch (error) {
       console.error('Error marking favorite:', error);
     }
   };
 
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+  };
+
+  const menuCategories = restaurantDetails?.menu_items
+    ? Array.from(new Set(restaurantDetails.menu_items.map((item: any) => item.category)))
+    : [];
+
+  console.log("Menu Items:", restaurantDetails?.menu_items);
+
 
 
   return (
@@ -133,7 +140,7 @@ const RestaurantProfile = () => {
             <button className='btn bg-bumblebee hover:bg-yellow-500 border-none btn-primary w-72 mt-8' onClick={() => setShowModal(true)}>Add Review</button>
             {/* Favorite button */}
             <button className='btn btn-primary hover:bg-yellow-500 bg-bumblebee border-none mt-8 w-72' onClick={toggleFavorite}>
-                {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+              {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
               <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-7 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-500'}`} viewBox="0 0 21 22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
@@ -158,18 +165,39 @@ const RestaurantProfile = () => {
               </div>
             </Tab>
             <Tab label="Menu">
-              <div className="p-1 h-96 overflow-scroll rounded-xl " style={{ scrollbarGutter: "stable" }}>
-                <div className='  h-full'>
-                  {
-                    restaurantDetails?.menu_items.map((item) => {
-                      return (
-                        <div className='flex items-center justify-between  border-[0.5px] border-neutral-300 p-1 my-2 rounded-lg'>
-                          <span className='text-2xl'>{item.name}</span>
-                          <span className='text-xl text-right'>{item.price}</span>
-                        </div>
-                      )
-                    })
-                  }
+              <div className="p-1 h-96 overflow-scroll rounded-xl" style={{ scrollbarGutter: "stable" }}>
+                <div className='flex flex-wrap gap-8 mb-4'>
+                <a
+                    className={`category-link ${selectedCategory === null ? 'selected' : ''}`}
+                    onClick={() => handleCategoryChange(null)}
+                    href="#"
+                  >
+                    All
+                  </a>
+                  {menuCategories.map((category) => (
+                    <a
+                      key={category}
+                      className={`category-link ${selectedCategory === category ? 'selected' : ''}`}
+                      onClick={() => handleCategoryChange(category)}
+                      href="#"
+                    >
+                      {category}
+                    </a>
+                  ))}
+                </div>
+                <div className='h-full'>
+                  {(restaurantDetails?.menu_items || [])
+                    .filter((item: any) => selectedCategory === null || item.category === selectedCategory)
+                    .map((item: any, index: number) => (
+                      <div
+                        key={item.id}
+                        className={`flex items-center justify-between p-2 my-2 rounded-lg menu-item ${index < 0 ? 'show' : ''}`}
+                        style={{ animation: `fadeIn 0.8s ${index * 0.1}s forwards` }}
+                      >
+                        <span className=''>{item.name}</span>
+                        <span className=''>Rs. {item.price}</span>
+                      </div>
+                    ))}
                 </div>
               </div>
             </Tab>
