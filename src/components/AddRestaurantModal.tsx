@@ -11,9 +11,26 @@ interface FormData {
     menu: FileList;
 }
 
+const MAX_FILES = 4;
+
+
 const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
     const [notification, setNotification] = useState<string | null>(null);
+    const [menuFiles, setMenuFiles] = useState<File[]>([]);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(event.target.files || []);
+        if (files.length + menuFiles.length <= MAX_FILES) {
+            setMenuFiles(prevFiles => [...prevFiles, ...files]);
+        } else {
+            alert(`You can only select up to ${MAX_FILES} images.`);
+        }
+    };
+
+    const handleRemoveFile = (index: number) => {
+        setMenuFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    };
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -23,10 +40,11 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
         formData.append('description', data.description);
         formData.append('opening_hours', data.openingHours);
         formData.append('price', data.price);
-        formData.append('user_id', user.id);  
-        if (data.menu.length > 0) {
-            formData.append('menu', data.menu[0]);
-        }
+        formData.append('user_id', user.id);
+        // Append each file with a unique key
+        menuFiles.forEach((file, index) => {
+            formData.append(`menu_${index}`, file);
+        });
 
         try {
             const response = await axios.post('http://127.0.0.1:8000/api/add-restaurant/', formData, {
@@ -42,10 +60,10 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
                 setNotification(null); // Hide the notification after 1 second
                 closeModal();
             }, 1000);
-        } catch (error) {
-            console.error('Error adding restaurant:', error);
+        }catch (error) {
+            console.error('Error adding restaurant:', error.response ? error.response.data : error.message);
             setNotification('An error occurred while adding the restaurant. Please try again.');
-        }
+        }        
     };
 
     return (
@@ -54,7 +72,7 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
             <div className="relative bg-white text-black rounded-lg p-6 max-w-md max-h-[90vh] overflow-y-auto">
                 <button onClick={closeModal} className="absolute top-3 right-5 text-gray-600 hover:text-gray-900" aria-label="Close">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
                 <h2 className="text-2xl mb-4">Request to Add a Restaurant</h2>
@@ -94,7 +112,7 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
                             type="text"
                             {...register('openingHours', { required: 'Opening hours are required' })}
                             className="input input-bordered w-full"
-                            placeholder='Enter the opening hours'
+                            placeholder='(Example : 9am-5pm)'
                         />
                         {errors.openingHours && <p className="text-red-500">{errors.openingHours.message}</p>}
                     </div>
@@ -109,12 +127,29 @@ const AddRestaurantModal = ({ closeModal }: { closeModal: () => void }) => {
                         {errors.price && <p className="text-red-500">{errors.price.message}</p>}
                     </div>
                     <div className="mb-4">
-                        <label className="block text-sm font-bold mb-2">Menu Image</label>
+                        <label className="block text-sm font-bold mb-2">Add Menu and Restaurant Images (up to 4)</label>
                         <input
                             type="file"
-                            {...register('menu')}
+                            accept="image/*"
+                            onChange={handleFileChange}
                             className="file-input file-input-bordered w-full"
+                            multiple
                         />
+                        <p className="text-gray-500">{menuFiles.length}/{MAX_FILES} images selected</p>
+                        <ul className="mt-2">
+                            {menuFiles.map((file, index) => (
+                                <li key={index} className="flex justify-between items-center">
+                                    {file.name}
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveFile(index)}
+                                        className="text-red-500 hover:text-red-700"
+                                    >
+                                        Remove
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                     <div className="flex justify-end">
                         <button type="button" onClick={closeModal} className="btn bg-bumblebee border-none hover:bg-yellow-500 btn-secondary mr-2">Cancel</button>

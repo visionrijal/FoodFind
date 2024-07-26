@@ -9,7 +9,7 @@ import MapComponent from "./pages/map"
 
 function App() {
   return (
-    <div className="px-5 py-5">
+    <div className="main px-5 py-5">
       <Router>
         <Navbar />
         <Routes>

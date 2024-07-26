@@ -2,11 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+.main {
+  overflow-x: hidden;
+}
+
 @layer utilities {
   .duration-high {
     @apply transition-all duration-300 ease-in-out;
   }
 }
+
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 
 @keyframes spin {
   from {
