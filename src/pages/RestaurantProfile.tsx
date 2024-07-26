@@ -148,16 +148,18 @@ const RestaurantProfile = () => {
             }</p>
 
             <p className='mt-3 w-full bg-slate-100 text-primary-content rounded-lg p-3 '>{restaurantDetails?.description}</p>
-            <div className='mt-2 flex flex-col md:flex-row md:items-center md:justify-between gap-[-1]'>
-              <button className='btn bg-bumblebee hover:bg-yellow-500 border-none btn-primary w-72 mt-8' onClick={() => setShowModal(true)}>Add Review</button>
-              {/* Favorite button */}
-              <button className='btn btn-primary hover:bg-yellow-500 bg-bumblebee border-none mt-8 w-72' onClick={toggleFavorite}>
+            <div className='mt-2 flex flex-col md:flex-row md:items-center md:justify-evenly gap-4'>
+              <button className='flex-1 btn bg-bumblebee hover:bg-yellow-500 border-none btn-primary mt-8 mx-2' onClick={() => setShowModal(true)}>
+                Add Review
+              </button>
+              <button className='flex-1 btn btn-primary hover:bg-yellow-500 bg-bumblebee border-none mt-8 mx-2' onClick={toggleFavorite}>
                 {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
                 <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-7 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-500'}`} viewBox="0 0 21 22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
               </button>
             </div>
+
           </div>
           <div className='h-96'>
             <Tabs>
@@ -261,7 +263,7 @@ const RestaurantProfile = () => {
       </section>
       <p className='text-3xl text font-extrabold'>You May Like</p>
       <section className='grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8'>
-        
+
         {restaurantList.map((restaurant) => (
           <Link key={restaurant.id} to={`/restaurant/${restaurant.id}`}>
             <div className="card bg-base-100 shadow-xl">
