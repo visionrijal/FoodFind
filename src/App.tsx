@@ -6,11 +6,13 @@ import MainApp from "./pages/MainApp"
 import RestaurantProfile from "./pages/RestaurantProfile"
 import UserProfile from "./pages/Profile"
 import MapComponent from "./pages/map"
+import ScrollToTop from './utility/ScrollToTop'
 
 function App() {
   return (
     <div className="main px-5 py-5">
       <Router>
+        <ScrollToTop />
         <Navbar />
         <Routes>
           <Route index element={<Home />} />
