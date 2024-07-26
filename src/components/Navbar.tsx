@@ -115,17 +115,20 @@ const Navbar = () => {
     };
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (searchRef.current && !searchRef.current.contains(event.target)) {
-                setSearchQuery('');
-                setSearchResults([]);
-                setSelectedIndex(-1);
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                searchRef.current &&
+                !searchRef.current.contains(event.target as Node) &&
+                !(event.target as HTMLElement).closest(".search-list-item")
+            ) {
+                handleClearSearch(); // Clear search only when clicking outside
             }
         };
-
+    
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+    
 
     const handleSuggestionClick = (id) => {
         navigate(`/restaurant/${id}`);
@@ -134,10 +137,18 @@ const Navbar = () => {
         setSelectedIndex(-1);
     };
 
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
                 handleSuggestionClick(searchResults[selectedIndex].id);
+            } else {
+                // Try to find an exact match ignoring case
+                const match = searchResults.find(
+                    (result) => result.name.toLowerCase() === searchQuery.toLowerCase()
+                );
+                if (match) {
+                    handleSuggestionClick(match.id);
+                }
             }
         } else if (event.key === 'ArrowDown') {
             setSelectedIndex((prevIndex) => (prevIndex + 1) % searchResults.length);
@@ -145,6 +156,7 @@ const Navbar = () => {
             setSelectedIndex((prevIndex) => (prevIndex - 1 + searchResults.length) % searchResults.length);
         }
     };
+    
 
     return (
         <>
