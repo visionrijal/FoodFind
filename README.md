@@ -26,7 +26,7 @@ To set up the frontend locally, follow these steps:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/FoodFindFrontend.git
+git clone https://github.com/visionrijal/FoodFind.git
 cd FoodFindFrontend
 
 # Install dependencies
