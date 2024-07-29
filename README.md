@@ -1,31 +1,54 @@
 # FoodFind
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to FoodFind, a restaurant discovery web app. It helps users find and explore restaurants based on their tastes, leveraging a user-friendly interface built with Vite and TypeScript. This project was completed as part of my 6th semester Software Engineering degree. Discover new dining spots, read reviews, and connect with food lovers in your community with FoodFind! 
 
-Currently, two official plugins are available:
+The backend repository can be found [here](https://github.com/dhunganaPradeep/FoodFindBE).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Objectives
 
-## Expanding the ESLint configuration
+The project's objectives are to:
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Develop a user-friendly platform to explore Kathmandu's restaurant scene.
+- Enhance the online presence of local restaurants and facilitate the sharing of culinary reviews and experiences.
 
-- Configure the top-level `parserOptions` property like this:
+## Tech Stack
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+- **Backend Database:** SQLite
+- **REST API Service:** Django REST Framework, Postman
+- **Web Application:** React + TypeScript + Vite
+- **IDE / Code Editor:** Sublime Text, Code-OSS
+- **Version Control System:** GitHub
+- **Documentation:** Overleaf
+
+## Installation
+
+To set up the frontend locally, follow these steps:
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/FoodFindFrontend.git
+cd FoodFindFrontend
+
+# Install dependencies
+npm install
+
+# Run the development server
+npm run dev
+
+# Open your browser and go to
+# http://localhost:3000 to see the application in action
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Collaborators
+- [Pradip Dhungana](dhunganapradip.com.np)
+- [Vision Rijal](https://visionrijal.com.np/)
+- [Bishnu Timilsena](https://github.com/BishnuTimilsena)
+
+
+## Contributing
+
+Feel free to fork this repository, make modifications, and contribute to the enhancement of FoodFind. Your contributions are valuable in making this project even better!
+
+Happy exploring!
+
+
