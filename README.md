@@ -55,7 +55,7 @@ npm run dev
 
 ## Installation steps for Backend
 
-To set up the frontend locally, follow these steps:
+To set up the backend locally, follow these steps:
 
 ```bash
 # Clone the repository
