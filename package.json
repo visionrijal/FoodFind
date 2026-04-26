@@ -37,7 +37,7 @@
     "react-leaflet": "^4.2.1",
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.24.0",
-    "swiper": "^11.1.4",
+    "swiper": "^12.1.2",
     "uid": "^2.0.0",
     "uuid": "^10.0.0"
   },
